@@ -1,13 +1,10 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { Documents, MusicCollectionDocument } from "./state/repository";
-import { copyToPrivateFileSystem, loadAudio } from "./lib/filesystem";
-import { useState } from "react";
-
-// TODO Move this into a React Context
-const ctx = new window.AudioContext();
+import { copyToPrivateFileSystem } from "./lib/filesystem";
+import { useMediaPlayer } from "./hooks/useMediaPlayer";
 
 function App(props: { documents: Documents }) {
-  const [audio, setAudio] = useState<AudioBufferSourceNode | null>(null);
+  const mediaPlayer = useMediaPlayer();
   const [doc, change] = useDocument<MusicCollectionDocument>(
     props.documents.musicCollection
   );
@@ -34,18 +31,6 @@ function App(props: { documents: Documents }) {
     });
   }
 
-  async function handlePlayAudio(fileName: string) {
-    if (audio) {
-      audio.disconnect();
-    }
-
-    const nextAudio = await loadAudio(ctx, fileName);
-
-    nextAudio.start();
-    setAudio(nextAudio);
-    ctx.resume();
-  }
-
   return (
     <>
       <label style={{ position: "fixed", right: 10, top: 10 }}>
@@ -64,13 +49,21 @@ function App(props: { documents: Documents }) {
       >
         My collection:{" "}
         {doc?.collection.map((item) => (
-          <button onClick={() => handlePlayAudio(item.fileName)}>
+          <button
+            key={item.fileName}
+            onClick={() => mediaPlayer.playMedia(item.fileName)}
+            disabled={item.fileName === mediaPlayer.currentMedia}
+          >
             {item.title}
           </button>
         ))}
       </div>
-      <button onClick={() => ctx.suspend()}>Pause</button>
-      <button onClick={() => ctx.resume()}>Play</button>
+      <button
+        onClick={mediaPlayer.togglePlayState}
+        disabled={!mediaPlayer.currentMedia}
+      >
+        {mediaPlayer.playState === "pause" ? "Play" : "Pause"}
+      </button>
     </>
   );
 }

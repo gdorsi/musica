@@ -25,20 +25,11 @@ export async function copyToPrivateFileSystem(target: HTMLInputElement) {
   return handles;
 }
 
-// Loads a file from the origin private filesystem into an audio node
-// TODO: Create an high-level orchestrator for audio files
-export async function loadAudio(ctx: AudioContext, fileName: string) {
+export async function getFile(fileName: string) {
   const root = await navigator.storage.getDirectory();
   const fileHandle = await root.getFileHandle(fileName);
 
   const file = await fileHandle.getFile();
-  const arrayBuffer = await file.arrayBuffer();
-  const decodedBuffer = await ctx.decodeAudioData(arrayBuffer);
 
-  // Create source node
-  const source = ctx.createBufferSource();
-  source.buffer = decodedBuffer;
-  source.connect(ctx.destination);
-
-  return source;
+  return file;
 }
