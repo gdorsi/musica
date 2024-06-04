@@ -7,10 +7,14 @@ import { createRepository, getDocumentsURLs } from "./state/repository.ts";
 
 const { repo } = createRepository();
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RepoContext.Provider value={repo}>
-      <App documents={getDocumentsURLs(repo)} />
-    </RepoContext.Provider>
-  </React.StrictMode>
-);
+const root = document.getElementById("root");
+
+if (root) {
+	ReactDOM.createRoot(root).render(
+		<React.StrictMode>
+			<RepoContext.Provider value={repo}>
+				<App documents={getDocumentsURLs(repo)} />
+			</RepoContext.Provider>
+		</React.StrictMode>,
+	);
+}
