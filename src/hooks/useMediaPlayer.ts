@@ -6,22 +6,22 @@ export type PlayState = "pause" | "play";
 export function useMediaPlayer() {
 	const audioManager = useMemo(() => new AudioManager(), []);
 
-	const [currentMedia, setCurrentMedia] = useState<string>("");
 	const [playState, setPlayState] = useState<PlayState>("pause");
 
 	const previousMediaLoad = useRef(Promise.resolve());
 
-	async function playMedia(fileName: string) {
+	async function playMedia(file: File) {
 		// Wait for the previous load to finish
 		// to avoid to incur into concurrency issues
 		await previousMediaLoad.current;
 
-		const promise = audioManager.loadAudio(fileName);
+		const promise = audioManager.loadAudio(file);
 		previousMediaLoad.current = promise;
+
+		await promise;
 
 		audioManager.play();
 		setPlayState("play");
-		setCurrentMedia(fileName);
 	}
 
 	async function togglePlayState() {
@@ -35,7 +35,6 @@ export function useMediaPlayer() {
 	}
 
 	return {
-		currentMedia,
 		playState,
 		playMedia,
 		togglePlayState,
