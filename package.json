@@ -6,29 +6,31 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@automerge/automerge": "^2.1.11",
-		"@automerge/automerge-repo": "^1.1.12",
-		"@automerge/automerge-repo-network-broadcastchannel": "^1.1.12",
-		"@automerge/automerge-repo-network-websocket": "^1.1.12",
-		"@automerge/automerge-repo-react-hooks": "^1.1.12",
-		"@automerge/automerge-repo-storage-indexeddb": "^1.1.12",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"@dxos/client": "0.5.5",
+		"@dxos/config": "0.5.5",
+		"@dxos/react-client": "0.5.5",
+		"react": "^18.3.0",
+		"react-dom": "^18.3.0",
+		"@dxos/echo-schema": "0.5.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.0",
-		"@types/react": "^18.2.64",
-		"@types/react-dom": "^18.2.21",
-		"@typescript-eslint/eslint-plugin": "^7.3.1",
-		"@typescript-eslint/parser": "^7.3.1",
-		"@vitejs/plugin-react": "^4.2.1",
 		"lefthook": "^1.6.15",
 		"typescript": "^5.2.2",
-		"vite": "^5.1.6",
-		"vite-plugin-wasm": "^3"
+		"@types/node": "^18.11.9",
+		"@types/sharedworker": "^0.0.111",
+		"vite": "^5.0.12",
+		"vite-plugin-top-level-await": "^1.4.1",
+		"vite-plugin-wasm": "^3.3.0",
+		"@types/react": "~18.0.21",
+		"@types/react-dom": "~18.0.6",
+		"@vitejs/plugin-react": "^4.2.1"
+	},
+	"overrides": {
+		"react": "^18.3.0",
+		"react-dom": "^18.3.0"
 	}
 }

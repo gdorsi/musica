@@ -1,51 +1,19 @@
-import { type Repo, isValidAutomergeUrl } from "@automerge/automerge-repo";
-import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
+import type { PublicKey } from "@dxos/react-client";
+import { Filter, create, useQuery, useSpace } from "@dxos/react-client/echo";
+import { useIdentity } from "@dxos/react-client/halo";
 import { useState } from "react";
-
-function getOrCreateDocument<V>(
-	repo: Repo,
-	name: string,
-	init: (d: V) => void = () => {},
-) {
-	const documentURL = localStorage.getItem(name);
-
-	if (isValidAutomergeUrl(documentURL)) {
-		return documentURL;
-	}
-
-	const handle = repo.create<V>();
-	handle.change(init);
-
-	localStorage.setItem(name, handle.url);
-
-	return handle.url;
-}
-
-export type MusicCollectionItem = {
-	fileName: string;
-	title: string;
-};
+import { fileToMediaCollectionFile } from "../lib/file";
+import { MusicCollectionItem } from "./types";
 
 export type MusicCollectionDocument = { collection: MusicCollectionItem[] };
 
-export function getDocumentsURLs(repo: Repo) {
-	return {
-		musicCollection: getOrCreateDocument<MusicCollectionDocument>(
-			repo,
-			"musicCollection",
-			(d) => {
-				d.collection = [];
-			},
-		),
-	};
-}
-
-export type Documents = ReturnType<typeof getDocumentsURLs>;
-
-export function useMusicCollection() {
-	const repo = useRepo();
-	const documentUrl = useState(() => getDocumentsURLs(repo).musicCollection)[0];
-	const [doc, change] = useDocument<MusicCollectionDocument>(documentUrl);
+export function useMusicCollection(key?: PublicKey) {
+	useIdentity();
+	const space = useSpace(key);
+	const collection = useQuery<MusicCollectionItem>(
+		space,
+		Filter.schema(MusicCollectionItem),
+	);
 
 	const [activeMedia, setActiveMedia] = useState<MusicCollectionItem | null>(
 		null,
@@ -53,24 +21,22 @@ export function useMusicCollection() {
 
 	async function addFilesToCollection(files: FileList | null) {
 		if (!files) return;
+		if (!space) return;
 
-		change(({ collection }) => {
-			for (const file of files) {
-				if (collection.some((item) => item.fileName === file.name)) {
-					continue;
-				}
+		for (const file of files) {
+			const sFile = await fileToMediaCollectionFile(file);
 
-				collection.push({
-					fileName: file.name,
-					// Remove the file extension on the title
-					title: file.name.replace(/\..+?$/, ""),
-				});
-			}
-		});
+			const task = create(MusicCollectionItem, {
+				type: "media",
+				title: file.name.replace(/\..+?$/, ""),
+				file: sFile,
+			});
+			space?.db.add(task);
+		}
 	}
 
 	return {
-		collection: doc?.collection ?? [],
+		collection,
 		addFilesToCollection,
 		activeMedia,
 		setActiveMedia,

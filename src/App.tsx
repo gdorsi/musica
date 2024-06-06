@@ -1,14 +1,18 @@
-import { copyToPrivateFileSystem, getFile } from "./lib/filesystem";
+import { copyToPrivateFileSystem } from "./lib/filesystem";
 import { useMediaPlayer } from "./hooks/useMediaPlayer";
-import {
-	type MusicCollectionItem,
-	useMusicCollection,
-} from "./state/musicCollection";
+import { useMusicCollection } from "./state/musicCollection";
+import { mediaCollectionFileToFile } from "./lib/file";
+import { useShareSpace } from "./hooks/useShareSpace";
+import { useJoinSpace } from "./hooks/useJoinSpace";
+import type { MusicCollectionItem } from "./state/types";
 
-function App() {
+export function App() {
 	const mediaPlayer = useMediaPlayer();
+	const share = useShareSpace();
+	const join = useJoinSpace();
+
 	const { addFilesToCollection, collection, activeMedia, setActiveMedia } =
-		useMusicCollection();
+		useMusicCollection(join.spaceKey);
 
 	async function handleFileLoad(evt: React.ChangeEvent<HTMLInputElement>) {
 		await copyToPrivateFileSystem(evt.target);
@@ -20,7 +24,8 @@ function App() {
 	async function handleMediaSelect(item: MusicCollectionItem) {
 		setActiveMedia(item);
 
-		const file = await getFile(item.fileName);
+		const file = await mediaCollectionFileToFile(item.file);
+
 		await mediaPlayer.playMedia(file);
 	}
 
@@ -44,9 +49,9 @@ function App() {
 				{collection.map((item) => (
 					<button
 						type="button"
-						key={item.fileName}
+						key={item.id}
 						onClick={() => handleMediaSelect(item)}
-						disabled={item.fileName === activeMedia?.fileName}
+						disabled={item.id === activeMedia?.id}
 					>
 						{item.title}
 					</button>
@@ -59,8 +64,23 @@ function App() {
 			>
 				{mediaPlayer.playState === "pause" ? "Play" : "Pause"}
 			</button>
+			<button type="button" onClick={share.createNewInvitation}>
+				Share
+			</button>
+
+			{share.url && (
+				<div>
+					Invitation created
+					<div>
+						<button type="button" onClick={share.copy}>
+							Copy URL
+						</button>
+						<button type="button" onClick={share.cancel}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			)}
 		</>
 	);
 }
-
-export default App;
