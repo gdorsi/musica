@@ -1,34 +1,27 @@
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import type { Documents, MusicCollectionDocument } from "./state/repository";
-import { copyToPrivateFileSystem } from "./lib/filesystem";
+import { copyToPrivateFileSystem, getFile } from "./lib/filesystem";
 import { useMediaPlayer } from "./hooks/useMediaPlayer";
+import {
+	type MusicCollectionItem,
+	useMusicCollection,
+} from "./state/musicCollection";
 
-function App(props: { documents: Documents }) {
+function App() {
 	const mediaPlayer = useMediaPlayer();
-	const [doc, change] = useDocument<MusicCollectionDocument>(
-		props.documents.musicCollection,
-	);
+	const { addFilesToCollection, collection, activeMedia, setActiveMedia } =
+		useMusicCollection();
 
 	async function handleFileLoad(evt: React.ChangeEvent<HTMLInputElement>) {
-		const files = await copyToPrivateFileSystem(evt.target);
+		await copyToPrivateFileSystem(evt.target);
+		addFilesToCollection(evt.target.files);
 
 		evt.target.value = "";
+	}
 
-		if (!files.length) return;
+	async function handleMediaSelect(item: MusicCollectionItem) {
+		setActiveMedia(item);
 
-		change(({ collection }) => {
-			for (const file of files) {
-				if (collection.some((item) => item.fileName === file.name)) {
-					continue;
-				}
-
-				collection.push({
-					fileName: file.name,
-					// Remove the file extension on the title
-					title: file.name.replace(/\..+?$/, ""),
-				});
-			}
-		});
+		const file = await getFile(item.fileName);
+		await mediaPlayer.playMedia(file);
 	}
 
 	return (
@@ -48,12 +41,12 @@ function App(props: { documents: Documents }) {
 				}}
 			>
 				My collection:{" "}
-				{doc?.collection.map((item) => (
+				{collection.map((item) => (
 					<button
 						type="button"
 						key={item.fileName}
-						onClick={() => mediaPlayer.playMedia(item.fileName)}
-						disabled={item.fileName === mediaPlayer.currentMedia}
+						onClick={() => handleMediaSelect(item)}
+						disabled={item.fileName === activeMedia?.fileName}
 					>
 						{item.title}
 					</button>
@@ -62,7 +55,7 @@ function App(props: { documents: Documents }) {
 			<button
 				type="button"
 				onClick={mediaPlayer.togglePlayState}
-				disabled={!mediaPlayer.currentMedia}
+				disabled={!activeMedia}
 			>
 				{mediaPlayer.playState === "pause" ? "Play" : "Pause"}
 			</button>
