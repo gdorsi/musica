@@ -1,34 +1,23 @@
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import type { Documents, MusicCollectionDocument } from "./state/repository";
-import { copyToPrivateFileSystem } from "./lib/filesystem";
 import { useMediaPlayer } from "./hooks/useMediaPlayer";
+import {
+	type MusicCollectionItem,
+	useMusicCollection,
+} from "./state/musicCollection";
 
-function App(props: { documents: Documents }) {
+function App() {
 	const mediaPlayer = useMediaPlayer();
-	const [doc, change] = useDocument<MusicCollectionDocument>(
-		props.documents.musicCollection,
-	);
+	const { useLiveQuery, addFilesToTheCollection } = useMusicCollection();
+	const musicCollection = useLiveQuery<MusicCollectionItem>("title");
 
 	async function handleFileLoad(evt: React.ChangeEvent<HTMLInputElement>) {
-		const files = await copyToPrivateFileSystem(evt.target);
+		const files = evt.target.files;
 
+		if (!files || !files.length) return;
+
+		await addFilesToTheCollection(files);
+
+		// reset the files input
 		evt.target.value = "";
-
-		if (!files.length) return;
-
-		change(({ collection }) => {
-			for (const file of files) {
-				if (collection.some((item) => item.fileName === file.name)) {
-					continue;
-				}
-
-				collection.push({
-					fileName: file.name,
-					// Remove the file extension on the title
-					title: file.name.replace(/\..+?$/, ""),
-				});
-			}
-		});
 	}
 
 	return (
@@ -48,11 +37,11 @@ function App(props: { documents: Documents }) {
 				}}
 			>
 				My collection:{" "}
-				{doc?.collection.map((item) => (
+				{musicCollection.docs.map((item) => (
 					<button
 						type="button"
-						key={item.fileName}
-						onClick={() => mediaPlayer.playMedia(item.fileName)}
+						key={item._id}
+						onClick={() => mediaPlayer.playMedia(item)}
 						disabled={item.fileName === mediaPlayer.currentMedia}
 					>
 						{item.title}

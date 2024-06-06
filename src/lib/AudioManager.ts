@@ -1,5 +1,3 @@
-import { getFile } from "./filesystem";
-
 export class AudioManager {
 	ctx: AudioContext;
 	mediaElement: HTMLAudioElement;
@@ -37,12 +35,11 @@ export class AudioManager {
 		}
 	}
 
-	async loadAudio(fileName: string) {
+	async loadAudio(file: File) {
 		await this.unloadCurrentAudio();
 
 		const { ctx, mediaElement } = this;
 
-		const file = await getFile(fileName);
 		const audioObjectURL = URL.createObjectURL(file);
 
 		this.audioObjectURL = audioObjectURL;
