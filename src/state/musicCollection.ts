@@ -1,76 +1,44 @@
-import { type Repo, isValidAutomergeUrl } from "@automerge/automerge-repo";
-import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
+import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { useState } from "react";
-
-function getOrCreateDocument<V>(
-	repo: Repo,
-	name: string,
-	init: (d: V) => void = () => {},
-) {
-	const documentURL = localStorage.getItem(name);
-
-	if (isValidAutomergeUrl(documentURL)) {
-		return documentURL;
-	}
-
-	const handle = repo.create<V>();
-	handle.change(init);
-
-	localStorage.setItem(name, handle.url);
-
-	return handle.url;
-}
-
-export type MusicCollectionItem = {
-	fileName: string;
-	title: string;
-};
-
-export type MusicCollectionDocument = { collection: MusicCollectionItem[] };
-
-export function getDocumentsURLs(repo: Repo) {
-	return {
-		musicCollection: getOrCreateDocument<MusicCollectionDocument>(
-			repo,
-			"musicCollection",
-			(d) => {
-				d.collection = [];
-			},
-		),
-	};
-}
-
-export type Documents = ReturnType<typeof getDocumentsURLs>;
+import type { MusicCollection, MusicItem } from "./schema";
+import { useUserDocuments } from "./user";
+import { copyToPrivateFileSystem } from "@/lib/filesystem";
 
 export function useMusicCollection() {
-	const repo = useRepo();
-	const documentUrl = useState(() => getDocumentsURLs(repo).musicCollection)[0];
-	const [doc, change] = useDocument<MusicCollectionDocument>(documentUrl);
+	const { collectionsUrls } = useUserDocuments();
 
-	const [activeMedia, setActiveMedia] = useState<MusicCollectionItem | null>(
-		null,
-	);
+	const [doc, change] = useDocument<MusicCollection>(collectionsUrls[0]);
+
+	const [activeMedia, setActiveMedia] = useState<MusicItem | null>(null);
 
 	async function addFilesToCollection(files: FileList | null) {
 		if (!files) return;
 
-		change(({ collection }) => {
-			for (const file of files) {
-				if (collection.some((item) => item.fileName === file.name)) {
-					continue;
-				}
+		const musicItems: MusicItem[] = [];
 
-				collection.push({
-					fileName: file.name,
-					// Remove the file extension on the title
-					title: file.name.replace(/\..+?$/, ""),
-				});
-			}
+		for (const file of files) {
+			const item: MusicItem = {
+				id: crypto.randomUUID(),
+				title: file.name.replace(/\..+?$/, ""),
+				description: "",
+				file: {
+					id: crypto.randomUUID(),
+					name: file.name,
+					type: file.type,
+				},
+			};
+
+			musicItems.push(item);
+			await copyToPrivateFileSystem(item.file.id, file);
+		}
+
+		change(({ items }) => {
+			items.push(...musicItems);
 		});
 	}
 
 	return {
-		collection: doc?.collection ?? [],
+		collection: doc?.items ?? [],
 		addFilesToCollection,
 		activeMedia,
 		setActiveMedia,

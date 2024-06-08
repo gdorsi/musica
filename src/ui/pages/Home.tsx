@@ -1,6 +1,6 @@
-import { copyToPrivateFileSystem, getFile } from "./lib/filesystem";
-import { useMediaPlayer } from "./hooks/useMediaPlayer";
-import { Button } from "./ui/components/ui/button";
+import { getFile } from "@/lib/filesystem";
+import { useMediaPlayer } from "@/hooks/useMediaPlayer";
+import { Button } from "../components/ui/button";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import {
 	Carousel,
@@ -8,14 +8,12 @@ import {
 	CarouselItem,
 	CarouselNext,
 	CarouselPrevious,
-} from "./ui/components/ui/carousel";
-import { Card, CardContent } from "./ui/components/ui/card";
+} from "../components/ui/carousel";
+import { Card, CardContent } from "../components/ui/card";
 import waveform from "@/ui/waveform.png";
 import { FaPause, FaPlay } from "react-icons/fa";
-import {
-	type MusicCollectionItem,
-	useMusicCollection,
-} from "./state/musicCollection";
+import { useMusicCollection } from "../../state/musicCollection";
+import type { MusicItem } from "@/state/schema";
 
 function App() {
 	const mediaPlayer = useMediaPlayer();
@@ -23,16 +21,15 @@ function App() {
 		useMusicCollection();
 
 	async function handleFileLoad(evt: React.ChangeEvent<HTMLInputElement>) {
-		await copyToPrivateFileSystem(evt.target);
-		addFilesToCollection(evt.target.files);
+		await addFilesToCollection(evt.target.files);
 
 		evt.target.value = "";
 	}
 
-	async function handleMediaSelect(item: MusicCollectionItem) {
+	async function handleMediaSelect(item: MusicItem) {
 		setActiveMedia(item);
 
-		const file = await getFile(item.fileName);
+		const file = await getFile(item.file.id);
 		await mediaPlayer.playMedia(file);
 	}
 
@@ -58,12 +55,11 @@ function App() {
 				<Carousel className="w-full max-w-sm justify-between">
 					<CarouselContent>
 						{collection.map((item) => (
-							<div key={item.fileName} className="flex flex-col items-center ">
+							<div key={item.id} className="flex flex-col items-center ">
 								<CarouselItem className="md:basis-1/3 lg:basis-1/5 w-50">
 									<label>
 										<button
 											type="button"
-											key={item.fileName}
 											onClick={() => handleMediaSelect(item)}
 											disabled={item === activeMedia}
 											hidden
