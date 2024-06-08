@@ -1,5 +1,8 @@
-import { isValidAutomergeUrl } from "@automerge/automerge-repo";
+import { type PeerId, isValidAutomergeUrl } from "@automerge/automerge-repo";
 import { z } from "zod";
+
+export const DidSchema = z.string().refine((_): _ is PeerId => true); // We use DID as PeerId for automerge
+export type Did = z.infer<typeof DidSchema>;
 
 export const MusicFileSchema = z.object({
 	id: z.string().uuid(),
@@ -22,6 +25,7 @@ export const MusicCollectionSchema = z.object({
 	version: z.literal(MusicCollectionVersion),
 	title: z.string(),
 	items: z.array(MusicItemSchema),
+	owner: DidSchema,
 });
 export type MusicCollection = z.infer<typeof MusicCollectionSchema>;
 
@@ -34,7 +38,7 @@ export type UserDocuments = z.infer<typeof UserDocumentsSchema>;
 
 export const UserVersion = "0.0.1";
 export const UserSchema = z.object({
-	id: z.string().uuid(),
+	id: DidSchema,
 	version: z.literal(UserVersion),
 	documentsListUrl: z.string().refine(isValidAutomergeUrl),
 	name: z.string(),

@@ -1,6 +1,4 @@
-import { registerUser } from "@/state/user";
-import type { User } from "@/state/schema";
-import { useRepo } from "@automerge/automerge-repo-react-hooks";
+import { registerUser } from "@/state/auth";
 import type React from "react";
 import { Button } from "../components/ui/button";
 import { useId } from "react";
@@ -13,21 +11,20 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { z } from "zod";
+import type { AuthData } from "@/state/auth";
 
 const NameSchema = z.string();
 
-export function Registration(props: { onSuccess: (user: User) => void }) {
-	const repo = useRepo();
-
-	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (evt) => {
+export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
+	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (evt) => {
 		evt.preventDefault();
 
 		const formData = new FormData(evt.currentTarget);
 
 		const name = NameSchema.parse(formData.get("name"));
 
-		const user = registerUser(name, repo);
-		props.onSuccess(user);
+		const auth = await registerUser(name);
+		props.onSuccess(auth);
 	};
 
 	const id = useId();
