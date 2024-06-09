@@ -24,7 +24,7 @@ export function getAuthData() {
 	if (!value) return null;
 
 	const user = UserSchema.parse(JSON.parse(value));
-	const repo = createRepository(user.id);
+	const repo = createRepository(user.id, user.syncServers);
 
 	return { user, repo };
 }
@@ -37,11 +37,14 @@ export async function getKeypair(user: User) {
 	return new ucans.EcdsaKeypair(keypair.keypair, keypair.publicKey, false);
 }
 
-export async function registerUser(name: string) {
+export async function registerUser(payload: {
+	name: string;
+	syncServer: string;
+}) {
 	const keypair = await ucans.EcdsaKeypair.create();
 
 	const did = DidSchema.parse(keypair.did());
-	const repo = createRepository(did);
+	const repo = createRepository(did, [payload.syncServer]);
 
 	const musicCollection = repo.create(
 		MusicCollectionSchema.parse({
@@ -61,7 +64,8 @@ export async function registerUser(name: string) {
 	const user: User = {
 		version: UserVersion,
 		id: did,
-		name,
+		name: payload.name,
+		syncServers: [payload.syncServer],
 		documentsListUrl: userDocuments.url,
 	};
 
