@@ -1,3 +1,3 @@
-# Vite + React + Automerge
+# Musica
 
-This template provides a minimal vite app with React and Automerge
+A local-first collaborative app for music creators
