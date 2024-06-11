@@ -1,4 +1,4 @@
-export async function copyToPrivateFileSystem(name: string, file: File) {
+export async function copyToPrivateFileSystem(name: string, file: Blob) {
 	const root = await navigator.storage.getDirectory();
 
 	const fileHandle = await root.getFileHandle(name, {
@@ -17,4 +17,16 @@ export async function getFile(fileName: string) {
 	const file = await fileHandle.getFile();
 
 	return file;
+}
+
+export async function exist(fileName: string) {
+	const root = await navigator.storage.getDirectory();
+
+	try {
+		await root.getFileHandle(fileName);
+
+		return true;
+	} catch (err) {
+		return false;
+	}
 }

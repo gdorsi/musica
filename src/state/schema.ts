@@ -42,5 +42,6 @@ export const UserSchema = z.object({
 	version: z.literal(UserVersion),
 	documentsListUrl: z.string().refine(isValidAutomergeUrl),
 	name: z.string(),
+	syncServers: z.array(z.string().ip()),
 });
 export type User = z.infer<typeof UserSchema>;

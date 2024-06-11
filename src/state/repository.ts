@@ -4,11 +4,13 @@ import { IndexedDBStorageAdapter } from "@automerge/automerge-repo-storage-index
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 import type { Did } from "./schema";
 
-export function createRepository(peerId: Did) {
+export function createRepository(peerId: Did, syncServers: string[]) {
 	const repo = new Repo({
 		peerId,
 		network: [
-			new BrowserWebSocketClientAdapter("wss://sync.automerge.org"),
+			...syncServers.map(
+				(address) => new BrowserWebSocketClientAdapter(`ws://${address}/`),
+			),
 			new BroadcastChannelNetworkAdapter(),
 		],
 		storage: new IndexedDBStorageAdapter("automerge"),

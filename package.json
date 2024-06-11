@@ -9,6 +9,9 @@
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview"
 	},
+	"workspaces": {
+		"packages": ["sync-server"]
+	},
 	"dependencies": {
 		"@automerge/automerge": "^2.2.2",
 		"@automerge/automerge-repo": "^1.1.12",

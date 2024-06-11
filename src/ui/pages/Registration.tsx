@@ -1,7 +1,6 @@
 import { registerUser } from "@/state/auth";
 import type React from "react";
 import { Button } from "../components/ui/button";
-import { useId } from "react";
 import {
 	Card,
 	CardContent,
@@ -13,7 +12,10 @@ import { Label } from "../components/ui/label";
 import { z } from "zod";
 import type { AuthData } from "@/state/auth";
 
-const NameSchema = z.string();
+const FormSchema = z.object({
+	name: z.string(),
+	syncServer: z.string(),
+});
 
 export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (evt) => {
@@ -21,13 +23,11 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 
 		const formData = new FormData(evt.currentTarget);
 
-		const name = NameSchema.parse(formData.get("name"));
+		const payload = FormSchema.parse(Object.fromEntries(formData.entries()));
 
-		const auth = await registerUser(name);
+		const auth = await registerUser(payload);
 		props.onSuccess(auth);
 	};
-
-	const id = useId();
 
 	return (
 		<Card className="w-[350px] m-auto">
@@ -40,8 +40,20 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 					onSubmit={handleSubmit}
 				>
 					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor={id}>Your name</Label>
-						<Input id={id} name="name" required autoComplete="off" />
+						<Label htmlFor="name">Your name</Label>
+						<Input id="name" name="name" required autoComplete="off" />
+					</div>
+
+					<div className="flex flex-col space-y-1.5">
+						<Label htmlFor="syncServer">Your sync server</Label>
+						<Input
+							id="syncServer"
+							name="syncServer"
+							required
+							autoComplete="off"
+							value="127.0.0.1:3000"
+							pattern="\d{1-3}\.\d{1-3}\.\d{1-3}(:\d+)?"
+						/>
 					</div>
 
 					<Button type="submit">Register</Button>

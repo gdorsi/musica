@@ -12,11 +12,16 @@ import {
 import { Card, CardContent } from "../components/ui/card";
 import waveformPic from "@/ui/waveform.png";
 import { FaPause, FaPlay } from "react-icons/fa";
-import { useMusicCollection } from "../../state/musicCollection";
+import {
+	useMusicCollection,
+	useMusicCollectionMediaSync,
+} from "../../state/musicCollection";
 import type { MusicItem } from "@/state/schema";
 import { WaveForm } from "../components/ui/waveform";
 
 function App() {
+	useMusicCollectionMediaSync();
+
 	const mediaPlayer = useMediaPlayer();
 	const { addFilesToCollection, collection, activeMedia, setActiveMedia } =
 		useMusicCollection();
