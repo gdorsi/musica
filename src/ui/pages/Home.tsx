@@ -10,10 +10,11 @@ import {
 	CarouselPrevious,
 } from "../components/ui/carousel";
 import { Card, CardContent } from "../components/ui/card";
-import waveform from "@/ui/waveform.png";
+import waveformPic from "@/ui/waveform.png";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { useMusicCollection } from "../../state/musicCollection";
 import type { MusicItem } from "@/state/schema";
+import { WaveForm } from "../components/ui/waveform";
 
 function App() {
 	const mediaPlayer = useMediaPlayer();
@@ -67,7 +68,7 @@ function App() {
 										<Card className="h-40 w-[100px] hover:cursor-pointer">
 											<CardContent className="flex aspect-square items-center justify-center p-0">
 												<img
-													src={waveform}
+													src={waveformPic}
 													alt="track"
 													className="h-full w-full"
 												/>
@@ -104,6 +105,7 @@ function App() {
 				</label>
 				<div />
 			</section>
+			<WaveForm mediaPlayer={mediaPlayer} height={50} />
 		</>
 	);
 }
