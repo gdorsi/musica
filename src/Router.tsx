@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { UserContext, getCurrentUser } from "./state/user";
+import { RepoContext } from "@automerge/automerge-repo-react-hooks";
+
+import { UserContext, getAuthData } from "./state/auth";
 import App from "./ui/pages/Home";
 import { Registration } from "./ui/pages/Registration";
 
 export function Router() {
-	const [user, setUser] = useState(getCurrentUser);
+	const [auth, setAuth] = useState(getAuthData);
 
-	if (!user) {
-		return <Registration onSuccess={setUser} />;
+	if (!auth) {
+		return <Registration onSuccess={setAuth} />;
 	}
 
 	return (
-		<UserContext.Provider value={user}>
-			<App />
+		<UserContext.Provider value={auth.user}>
+			<RepoContext.Provider value={auth.repo}>
+				<App />
+			</RepoContext.Provider>
 		</UserContext.Provider>
 	);
 }

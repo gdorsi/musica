@@ -1,7 +1,7 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { useState } from "react";
 import type { MusicCollection, MusicItem } from "./schema";
-import { useUserDocuments } from "./user";
+import { useUserDocuments } from "./auth";
 import { copyToPrivateFileSystem } from "@/lib/filesystem";
 
 export function useMusicCollection() {

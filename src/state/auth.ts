@@ -1,6 +1,10 @@
 import type { Repo } from "@automerge/automerge-repo";
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
+import * as idb from "idb-keyval";
 import { createContext, useContext, useMemo } from "react";
+import * as ucans from "@ucans/ucans";
+import { createRepository } from "./repository";
+
 import {
 	MusicCollectionSchema,
 	MusicCollectionVersion,
@@ -9,25 +13,43 @@ import {
 	UserDocumentsVersion,
 	UserSchema,
 	UserVersion,
+	DidSchema,
 } from "./schema";
 
-export function getCurrentUser() {
+export type AuthData = { user: User; repo: Repo };
+
+export function getAuthData() {
 	const value = localStorage.getItem("currentUser");
 
 	if (!value) return null;
 
 	const user = UserSchema.parse(JSON.parse(value));
+	const repo = createRepository(user.id);
 
-	return user;
+	return { user, repo };
 }
 
-export function registerUser(name: string, repo: Repo) {
+export async function getKeypair(user: User) {
+	const keypair = await idb.get(user.id);
+
+	if (!keypair) throw new Error("the keypair is missing!");
+
+	return new ucans.EcdsaKeypair(keypair.keypair, keypair.publicKey, false);
+}
+
+export async function registerUser(name: string) {
+	const keypair = await ucans.EcdsaKeypair.create();
+
+	const did = DidSchema.parse(keypair.did());
+	const repo = createRepository(did);
+
 	const musicCollection = repo.create(
 		MusicCollectionSchema.parse({
 			version: MusicCollectionVersion,
 			id: crypto.randomUUID(),
 			title: "My first collection",
 			items: [],
+			owner: did,
 		}),
 	);
 
@@ -38,14 +60,15 @@ export function registerUser(name: string, repo: Repo) {
 
 	const user: User = {
 		version: UserVersion,
-		id: crypto.randomUUID(),
+		id: did,
 		name,
 		documentsListUrl: userDocuments.url,
 	};
 
+	await idb.set(did, keypair);
 	localStorage.setItem("currentUser", JSON.stringify(user));
 
-	return user;
+	return { user, repo };
 }
 
 export const UserContext = createContext<User | null>(null);
