@@ -3,8 +3,6 @@ import { useMediaPlayer } from "@/hooks/useMediaPlayer";
 import { Button } from "../components/ui/button";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
-import { Card, CardContent } from "../components/ui/card";
-import waveformPic from "@/ui/waveform.png";
 import { MdDelete } from "react-icons/md";
 
 import { FaPause, FaPlay, FaPlayCircle } from "react-icons/fa";
@@ -18,6 +16,7 @@ import { Sidebar } from "../components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import { Input } from "../components/ui/input";
 import { Table, TableBody, TableCell, TableRow } from "../components/ui/table";
+import { AddNewDevice } from "../components/recipes/add-new-device";
 
 function App() {
 	useMusicCollectionMediaSync();
@@ -49,24 +48,21 @@ function App() {
 							<div>
 								<Input type="search" placeholder="Search by Name or Tag" />
 							</div>
-							<div className="ml-auto mr-4 gap-6 flex items-center">
+							<div className="ml-auto mr-4 gap-3 flex items-center">
 								<Button className="hover:cursor-pointer">
-									<label className="flex flex-row hover:pointer">
+									<label className="flex flex-row items-center hover:cursor-pointer">
 										<input
 											type="file"
 											onChange={handleFileLoad}
 											multiple
 											hidden
 										/>
-										<PlusCircledIcon className="mr-2 h-4 w-4 hover:pointer" />
-										add files
+										<PlusCircledIcon className="mr-2 h-4 w-4 hover:cursor-pointer" />
+										Load new songs
 									</label>
 								</Button>
 
-								<Button className="hover:pointer">
-									<PlusCircledIcon className="mr-2 h-4 w-4 hover:pointer" />
-									New Playlist
-								</Button>
+								<AddNewDevice />
 							</div>
 						</div>
 						<div className="border-none p-0 outline-none">
@@ -85,7 +81,7 @@ function App() {
 												<TableCell className="font-medium">
 													{item.title}
 												</TableCell>
-												<TableCell>
+												<TableCell className="w-[40px]">
 													<label>
 														<button
 															type="button"
@@ -99,7 +95,7 @@ function App() {
 														/>
 													</label>
 												</TableCell>
-												<TableCell className="text-right">
+												<TableCell className="w-[40px] text-right">
 													<MdDelete size={30} />
 												</TableCell>
 											</TableRow>
