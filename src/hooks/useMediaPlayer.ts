@@ -62,7 +62,7 @@ export function useMediaPlayer() {
 	}
 
 	function seek(time: number) {
-		audioManager.mediaElement.fastSeek(time);
+		audioManager.mediaElement.currentTime = time;
 	}
 
 	return {
