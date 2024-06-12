@@ -23,25 +23,33 @@ export const MusicCollectionVersion = "0.0.1";
 export const MusicCollectionSchema = z.object({
 	id: z.string().uuid(),
 	version: z.literal(MusicCollectionVersion),
-	title: z.string(),
 	items: z.array(MusicItemSchema),
 	owner: DidSchema,
 });
 export type MusicCollection = z.infer<typeof MusicCollectionSchema>;
 
-export const UserDocumentsVersion = "0.0.1";
-export const UserDocumentsSchema = z.object({
-	version: z.literal(UserDocumentsVersion),
-	collectionsUrls: z.array(z.string().refine(isValidAutomergeUrl)),
+export const RootDocumentVersion = "0.0.1";
+export const RootDocumentSchema = z.object({
+	version: z.literal(RootDocumentVersion),
+	musicCollection: z.string().refine(isValidAutomergeUrl),
+	// Not implemented yet
+	playlists: z.array(z.string().refine(isValidAutomergeUrl)),
+	name: z.string(),
+	owner: DidSchema,
 });
-export type UserDocuments = z.infer<typeof UserDocumentsSchema>;
+export type RootDocument = z.infer<typeof RootDocumentSchema>;
 
 export const UserVersion = "0.0.1";
 export const UserSchema = z.object({
 	id: DidSchema,
 	version: z.literal(UserVersion),
-	documentsListUrl: z.string().refine(isValidAutomergeUrl),
-	name: z.string(),
+	rootDocument: z.string().refine(isValidAutomergeUrl),
 	syncServers: z.array(z.string()),
 });
 export type User = z.infer<typeof UserSchema>;
+
+export const JoinDevicePayloadSchema = z.object({
+	u: z.string(),
+	d: z.string().refine(isValidAutomergeUrl),
+	s: z.string(),
+});

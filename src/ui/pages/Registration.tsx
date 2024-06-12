@@ -1,5 +1,4 @@
 import { registerUser } from "@/state/auth";
-import type React from "react";
 import { Button } from "../components/ui/button";
 import {
 	Card,
@@ -11,6 +10,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { z } from "zod";
 import type { AuthData } from "@/state/auth";
+import { JoinDevice } from "../components/recipes/join-device";
 
 const FormSchema = z.object({
 	name: z.string(),
@@ -30,35 +30,39 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 	};
 
 	return (
-		<Card className="w-[350px] m-auto">
-			<CardHeader>
-				<CardTitle>Create a new account</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<form
-					className="grid w-full items-center space-y-3"
-					onSubmit={handleSubmit}
-				>
-					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="name">Your name</Label>
-						<Input id="name" name="name" required autoComplete="off" />
-					</div>
+		<>
+			<div className="absolute right-3 top-3">
+				<JoinDevice />
+			</div>
+			<Card className="w-[350px] m-auto">
+				<CardHeader>
+					<CardTitle>Create a new account</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<form
+						className="grid w-full items-center space-y-3"
+						onSubmit={handleSubmit}
+					>
+						<div className="flex flex-col space-y-1.5">
+							<Label htmlFor="name">Your name</Label>
+							<Input id="name" name="name" required autoComplete="off" />
+						</div>
 
-					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="syncServer">Your sync server</Label>
-						<Input
-							id="syncServer"
-							name="syncServer"
-							required
-							autoComplete="off"
-							value="127.0.0.1:3000"
-							pattern="\d{1-3}\.\d{1-3}\.\d{1-3}(:\d+)?"
-						/>
-					</div>
+						<div className="flex flex-col space-y-1.5">
+							<Label htmlFor="syncServer">Your sync server</Label>
+							<Input
+								id="syncServer"
+								name="syncServer"
+								required
+								autoComplete="off"
+								value="127.0.0.1:3000"
+							/>
+						</div>
 
-					<Button type="submit">Register</Button>
-				</form>
-			</CardContent>
-		</Card>
+						<Button type="submit">Register</Button>
+					</form>
+				</CardContent>
+			</Card>
+		</>
 	);
 }
