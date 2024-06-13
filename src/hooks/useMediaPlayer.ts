@@ -64,9 +64,13 @@ export function useMediaPlayer() {
 	function seek(time: number) {
 		audioManager.mediaElement.currentTime = time;
 	}
+	function setVolume(volume: number) {
+		audioManager.mediaElement.volume = volume;
+	}
 
 	return {
 		currentTime,
+		setVolume,
 		duration,
 		seek,
 		waveFormData,
