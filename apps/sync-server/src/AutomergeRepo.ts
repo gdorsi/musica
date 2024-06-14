@@ -9,11 +9,13 @@ import type { WebSocketServer } from "ws";
 
 type AutomergeRepoParams = {
 	socket: WebSocketServer;
+	dir: string;
 };
 
-export async function createAutomergeRepo({ socket }: AutomergeRepoParams) {
-	const dir = "automerge-sync-server-data";
-
+export async function createAutomergeRepo({
+	socket,
+	dir,
+}: AutomergeRepoParams) {
 	await fs.mkdir(dir, { recursive: true });
 
 	return new Repo({
