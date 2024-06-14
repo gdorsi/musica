@@ -25,6 +25,7 @@ import { Input } from "../components/ui/input";
 import { Table, TableBody, TableCell, TableRow } from "../components/ui/table";
 import { useState } from "react";
 import { AddNewDevice } from "../components/recipes/add-new-device";
+import { cn } from "../utils";
 
 function App() {
 	useMusicCollectionMediaSync();
@@ -40,6 +41,10 @@ function App() {
 	}
 
 	async function handleMediaSelect(item: MusicItem) {
+		if (item === activeMedia) {
+			return mediaPlayer.togglePlayState();
+		}
+
 		setLoading(true);
 		setActiveMedia(item);
 
@@ -64,6 +69,14 @@ function App() {
 	function handleVolumeChange(event: React.ChangeEvent<HTMLInputElement>) {
 		mediaPlayer.setVolume(event.currentTarget.valueAsNumber);
 	}
+
+	function handleDelete(event: React.MouseEvent<HTMLButtonElement>) {
+		event.stopPropagation();
+
+		alert("Delete not implemented yet!");
+	}
+
+	const isPlaying = mediaPlayer.playState !== "pause" || loading;
 
 	return (
 		<>
@@ -101,40 +114,77 @@ function App() {
 						<div>
 							<Table>
 								<TableBody>
-									{collection.map((item) => (
-										<TableRow
-											key={item.id}
-											className={`hover:bg-gray-100 ${item === activeMedia ? "bg-gray-200 text-gray-400" : ""}`}
-										>
-											<TableCell className="w-12">
-												<img
-													src="https://placehold.co/512x512"
-													alt={`${item.title} cover`}
-													className="w-full h-auto"
-												/>
-											</TableCell>
-											<TableCell className="font-medium">
-												{item.title}
-											</TableCell>
-											<TableCell>
-												<button
-													type="button"
-													onClick={() => handleMediaSelect(item)}
-													className="hover:cursor-pointer"
-												>
-													{item === activeMedia &&
-													mediaPlayer.playState !== "pause" ? (
-														<FaPause size={30} />
-													) : (
-														<FaPlayCircle size={30} />
+									{collection.map((item, i) => {
+										const isCurrentActiveMedia = item === activeMedia;
+										return (
+											<TableRow
+												key={item.id}
+												onClick={() => handleMediaSelect(item)}
+												className={cn(
+													"group hover:bg-gray-100",
+													!isCurrentActiveMedia
+														? " text-gray-600"
+														: "bg-gray-200 text-black",
+												)}
+											>
+												<TableCell className="w-1">
+													<div className="h-full grid items-center text-center w-[30px]">
+														<span
+															className={cn(
+																!isCurrentActiveMedia
+																	? "group-hover:hidden"
+																	: "hidden",
+																"font-bold",
+															)}
+														>
+															{i}
+														</span>
+														<button
+															type="button"
+															className={cn(
+																!isCurrentActiveMedia &&
+																	"hidden group-hover:block",
+																"border-none ",
+															)}
+														>
+															{item === activeMedia && isPlaying ? (
+																<FaPause size={30} />
+															) : (
+																<FaPlayCircle size={30} />
+															)}
+														</button>
+													</div>
+												</TableCell>
+												<TableCell className="w-12">
+													<img
+														src="https://placehold.co/512x512"
+														alt={`${item.title} cover`}
+														className="w-full h-auto"
+													/>
+												</TableCell>
+												<TableCell className="font-medium">
+													{item.title}
+												</TableCell>
+												<TableCell className="w-[30px]">
+													{item === activeMedia && (
+														<div>
+															{Math.ceil(mediaPlayer.duration / 60)}:
+															{Math.ceil(mediaPlayer.duration % 60)}
+														</div>
 													)}
-												</button>
-											</TableCell>
-											<TableCell className="text-right">
-												<MdDelete size={30} className="hover:cursor-pointer" />
-											</TableCell>
-										</TableRow>
-									))}
+												</TableCell>
+												<TableCell className="w-[50px]">
+													<button
+														type="button"
+														onClick={handleDelete}
+														className="w-[30px] hidden group-hover:grid h-full items-center border-none"
+													>
+														<MdDelete size={30} />
+													</button>
+												</TableCell>
+											</TableRow>
+										);
+									})}
 								</TableBody>
 							</Table>
 						</div>
