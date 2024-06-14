@@ -21,4 +21,4 @@ server.on("upgrade", (request, socket, head) => {
 	});
 });
 
-createAutomergeRepo({ socket: webSocketServer, dir: "store/automerge" });
+createAutomergeRepo({ socket: webSocketServer, dir: "storage/automerge" });

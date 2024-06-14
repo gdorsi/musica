@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AudioManager } from "../lib/AudioManager";
+import { AudioManager } from "./AudioManager";
 
 export type PlayState = "pause" | "play";
 

@@ -8,8 +8,8 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "../ui/dialog";
-import { createJoinKeypair } from "@/state/auth";
 import { copyToClipboard } from "@/ui/utils";
+import { createJoinKeypair } from "@/auth/registration";
 
 export function JoinDevice() {
 	const [did, setDid] = useState<string>();

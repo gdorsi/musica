@@ -5,6 +5,8 @@ export async function copyToPrivateFileSystem(name: string, file: Blob) {
 		create: true,
 	});
 
+	// TODO: Safari doesn't support this, switch to createSyncAccessHandle
+	// https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle
 	const writable = await fileHandle.createWritable();
 	await writable.write(await file.arrayBuffer());
 	await writable.close();
