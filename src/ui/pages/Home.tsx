@@ -91,7 +91,10 @@ function App() {
 								className="flex-grow mr-4"
 							/>
 							<div className="flex items-center space-x-4">
-								<Button className="hover:cursor-pointer flex items-center">
+								<Button
+									asChild
+									className="hover:cursor-pointer flex items-center"
+								>
 									<label className="flex items-center">
 										<input
 											type="file"
