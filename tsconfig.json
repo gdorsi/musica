@@ -5,9 +5,12 @@
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"skipLibCheck": true,
-		"baseUrl": ".",
+
+		// For shadcdn/ui
+		"baseUrl": "./apps/client/src",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/ui/*": ["ui/*"],
+			"@/utils/*": ["utils/*"],
 		},
 
 		/* Bundler mode */
@@ -25,6 +28,4 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src"],
-	"references": [{ "path": "./tsconfig.node.json" }]
 }

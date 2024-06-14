@@ -17,7 +17,7 @@ const didRe = /^did:key:[a-zA-Z0-9]{49}$/;
 const didSchema = z.string().refine((string) => Boolean(string.match(didRe)));
 
 async function hasAccessToResource(params: {
-	auth?: string;
+	auth: string | undefined;
 	ownerDid: string;
 	serviceDid: string;
 	resource: string;

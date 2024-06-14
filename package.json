@@ -1,44 +1,17 @@
 {
 	"name": "musica",
 	"private": true,
-	"version": "1.1.12",
+	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"typecheck": "tsc",
-		"preview": "vite preview"
+		"build": "pnpm run -r build",
+		"dev": "pnpm run -r dev",
+		"typecheck": "pnpm run -r typecheck"
 	},
 	"workspaces": {
-		"packages": ["sync-server"]
+		"packages": ["apps/client", "apps/sync-server"]
 	},
-	"dependencies": {
-		"@automerge/automerge": "^2.2.2",
-		"@automerge/automerge-repo": "^1.1.12",
-		"@automerge/automerge-repo-network-broadcastchannel": "^1.1.12",
-		"@automerge/automerge-repo-network-websocket": "^1.1.12",
-		"@automerge/automerge-repo-react-hooks": "^1.1.12",
-		"@automerge/automerge-repo-storage-indexeddb": "^1.1.12",
-		"@radix-ui/react-dialog": "^1.0.5",
-		"@radix-ui/react-icons": "^1.3.0",
-		"@radix-ui/react-label": "^2.0.2",
-		"@radix-ui/react-scroll-area": "^1.0.5",
-		"@radix-ui/react-separator": "^1.0.3",
-		"@radix-ui/react-slot": "^1.0.2",
-		"@ucans/ucans": "^0.12.0",
-		"class-variance-authority": "^0.7.0",
-		"clsx": "^2.1.1",
-		"embla-carousel-react": "^8.1.3",
-		"idb-keyval": "^6.2.1",
-		"next-themes": "^0.3.0",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"react-icons": "^5.2.1",
-		"sonner": "^1.5.0",
-		"tailwind-merge": "^2.3.0",
-		"tailwindcss-animate": "^1.0.7",
-		"zod": "^3.23.8"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.0",
 		"@types/node": "^20.14.2",
@@ -54,5 +27,6 @@
 		"typescript": "^5.2.2",
 		"vite": "^5.1.6",
 		"vite-plugin-wasm": "^3"
-	}
+	},
+	"packageManager": "pnpm@9.3.0+sha512.ee7b93e0c2bd11409c6424f92b866f31d3ea1bef5fbe47d3c7500cdc3c9668833d2e55681ad66df5b640c61fa9dc25d546efa54d76d7f8bf54b13614ac293631"
 }

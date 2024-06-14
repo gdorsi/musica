@@ -5,7 +5,7 @@ import { WebSocketServer } from "ws";
 import { createAutomergeRepo } from "./AutomergeRepo";
 
 const app = await createMediaServer({
-	storage: new NodeFSMediaStorageAdapter("media"),
+	storage: new NodeFSMediaStorageAdapter("storage/media"),
 	allowedOrigins: ["*"],
 });
 
@@ -21,4 +21,4 @@ server.on("upgrade", (request, socket, head) => {
 	});
 });
 
-createAutomergeRepo({ socket: webSocketServer });
+createAutomergeRepo({ socket: webSocketServer, dir: "store/automerge" });
