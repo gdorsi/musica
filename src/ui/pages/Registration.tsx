@@ -11,10 +11,11 @@ import { Label } from "../components/ui/label";
 import { z } from "zod";
 import type { AuthData } from "@/state/auth";
 import { JoinDevice } from "../components/recipes/join-device";
+import { useState } from "react";
 
 const FormSchema = z.object({
 	name: z.string(),
-	syncServer: z.string(),
+	syncServer: z.optional(z.string()),
 });
 
 export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
@@ -28,6 +29,8 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 		const auth = await registerUser(payload);
 		props.onSuccess(auth);
 	};
+
+	const [withSyncServer, setWithSyncServer] = useState(false);
 
 	return (
 		<>
@@ -49,14 +52,22 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 						</div>
 
 						<div className="flex flex-col space-y-1.5">
-							<Label htmlFor="syncServer">Your sync server</Label>
-							<Input
-								id="syncServer"
-								name="syncServer"
-								required
-								autoComplete="off"
-								value="127.0.0.1:3000"
-							/>
+							<Label className="flex space-x-1.5">
+								<input
+									type="checkbox"
+									onChange={(evt) => setWithSyncServer(evt.target.checked)}
+								/>
+								<span>Sync server</span>
+							</Label>
+							{withSyncServer && (
+								<Input
+									id="syncServer"
+									name="syncServer"
+									required
+									autoComplete="off"
+									value="127.0.0.1:3000"
+								/>
+							)}
 						</div>
 
 						<Button type="submit">Register</Button>

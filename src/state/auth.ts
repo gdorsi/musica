@@ -41,12 +41,13 @@ async function getKeypairFromStorage(key: string) {
 
 export async function registerUser(payload: {
 	name: string;
-	syncServer: string;
+	syncServer?: string | undefined;
 }) {
 	const keypair = await ucans.EcdsaKeypair.create();
+	const syncServers = payload.syncServer ? [payload.syncServer] : [];
 
 	const did = DidSchema.parse(keypair.did());
-	const repo = createRepository(did, [payload.syncServer]);
+	const repo = createRepository(did, syncServers);
 
 	const musicCollection = repo.create(
 		MusicCollectionSchema.parse({
@@ -69,7 +70,7 @@ export async function registerUser(payload: {
 		version: UserVersion,
 		id: did,
 		rootDocument: rootDocument.url,
-		syncServers: [payload.syncServer],
+		syncServers,
 	};
 
 	await idb.set(did, keypair);
