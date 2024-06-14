@@ -3,8 +3,6 @@ import { useMediaPlayer } from "@/hooks/useMediaPlayer";
 import { Button } from "../components/ui/button";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
-import { Card, CardContent } from "../components/ui/card";
-import waveformPic from "@/ui/waveform.png";
 import { MdDelete } from "react-icons/md";
 
 import {
@@ -26,6 +24,7 @@ import { Separator } from "@radix-ui/react-separator";
 import { Input } from "../components/ui/input";
 import { Table, TableBody, TableCell, TableRow } from "../components/ui/table";
 import { useState } from "react";
+import { AddNewDevice } from "../components/recipes/add-new-device";
 
 function App() {
 	useMusicCollectionMediaSync();
@@ -62,8 +61,8 @@ function App() {
 		handleMediaSelect(collection[previousIndex]);
 	}
 
-	function handleVolumeChange(event) {
-		mediaPlayer.setVolume(event.target.value);
+	function handleVolumeChange(event: React.ChangeEvent<HTMLInputElement>) {
+		mediaPlayer.setVolume(event.currentTarget.valueAsNumber);
 	}
 
 	return (
@@ -92,10 +91,7 @@ function App() {
 									</label>
 								</Button>
 
-								<Button className="hover:pointer flex items-center">
-									<PlusCircledIcon className="mr-2 h-4 w-4" />
-									New Playlist
-								</Button>
+								<AddNewDevice />
 							</div>
 						</div>
 						<h2 className="text-2xl font-semibold tracking-tight mt-5">
@@ -112,8 +108,8 @@ function App() {
 										>
 											<TableCell className="w-12">
 												<img
-													src={waveformPic}
-													alt="Waveform"
+													src="https://placehold.co/512x512"
+													alt={`${item.title} cover`}
 													className="w-full h-auto"
 												/>
 											</TableCell>
