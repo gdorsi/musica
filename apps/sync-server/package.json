@@ -7,7 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "node --loader @esbuild-kit/esm-loader --watch ./src/index.ts",
-		"typeckech": "tsc"
+		"typecheck": "tsc"
 	},
 	"dependencies": {
 		"@automerge/automerge": "^2.2.2",

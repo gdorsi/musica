@@ -1,4 +1,3 @@
-import { registerUser } from "@/state/auth";
 import { Button } from "../components/ui/button";
 import {
 	Card,
@@ -9,9 +8,10 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { z } from "zod";
-import type { AuthData } from "@/state/auth";
 import { JoinDevice } from "../components/recipes/join-device";
 import { useState } from "react";
+import { AuthData } from "@/auth/auth";
+import { registerUser } from "@/auth/registration";
 
 const FormSchema = z.object({
 	name: z.string(),

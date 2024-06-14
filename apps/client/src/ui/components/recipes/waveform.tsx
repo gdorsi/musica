@@ -1,4 +1,4 @@
-import type { MediaPlayer } from "@/hooks/useMediaPlayer";
+import { MediaPlayer } from "@/audio/useMediaPlayer";
 import { cn } from "@/ui/utils";
 
 export function WaveForm(props: {

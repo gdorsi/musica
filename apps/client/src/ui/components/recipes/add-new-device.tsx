@@ -1,7 +1,7 @@
 import { Button } from "../ui/button";
 import { MdOutlineDevices } from "react-icons/md";
 
-import { DidSchema } from "@/state/schema";
+import { DidSchema } from "@/data/schema";
 import { useState } from "react";
 import {
 	Dialog,
@@ -11,10 +11,11 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "../ui/dialog";
-import { generateInvitationURL, useUser } from "@/state/auth";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { copyToClipboard } from "@/ui/utils";
+import { generateInvitationURL } from "@/auth/registration";
+import { useUser } from "@/auth/useUser";
 
 export function AddNewDevice() {
 	const user = useUser();

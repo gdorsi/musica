@@ -3,7 +3,10 @@ pre-commit:
     check:
       glob: "apps/*/src/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} && git update-index --again
-    typecheck:
-      glob: "apps/*/src/*.{ts,mts,tsx}"
-      run: npm run typecheck
+    typecheck-client:
+      glob: "apps/client/src/*.{ts,mts,tsx}"
+      run: cd apps/client && pnpm run typecheck
+    typecheck-server:
+      glob: "apps/sync-server/src/*.{ts,mts,tsx}"
+      run: cd apps/sync-server && pnpm run typecheck
    

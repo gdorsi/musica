@@ -2,8 +2,6 @@ export class AudioManager {
 	ctx: AudioContext;
 	mediaElement: HTMLAudioElement;
 	track: MediaElementAudioSourceNode;
-	gainNode: GainNode;
-	panner: StereoPannerNode;
 
 	audioObjectURL: string | null = null;
 
@@ -24,8 +22,6 @@ export class AudioManager {
 		this.ctx = ctx;
 		this.mediaElement = mediaElement;
 		this.track = track;
-		this.gainNode = gainNode;
-		this.panner = panner;
 	}
 
 	async unloadCurrentAudio() {

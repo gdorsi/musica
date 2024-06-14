@@ -1,6 +1,6 @@
 import { cn } from "../../utils";
-import { Button } from "./button";
-import { ScrollArea } from "./scroll-area";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function Sidebar() {
 	return (

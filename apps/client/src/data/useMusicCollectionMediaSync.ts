@@ -1,5 +1,5 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type {
 	Did,
 	MusicCollection,
@@ -7,50 +7,10 @@ import type {
 	MusicItem,
 	User,
 } from "./schema";
-import { getAuthToken, useUser, useRootDocument } from "./auth";
-import { copyToPrivateFileSystem, exist, getFile } from "@/lib/filesystem";
-
-export function useMusicCollection() {
-	const document = useRootDocument();
-
-	const [doc, change] = useDocument<MusicCollection>(document?.musicCollection);
-
-	const [activeMedia, setActiveMedia] = useState<MusicItem | null>(null);
-
-	async function addFilesToCollection(files: FileList | null) {
-		if (!files) return;
-		if (!document) return;
-
-		const musicItems: MusicItem[] = [];
-
-		for (const file of files) {
-			const item: MusicItem = {
-				id: crypto.randomUUID(),
-				title: file.name.replace(/\..+?$/, ""),
-				description: "",
-				file: {
-					id: crypto.randomUUID(),
-					name: file.name,
-					type: file.type,
-				},
-			};
-
-			musicItems.push(item);
-			await copyToPrivateFileSystem(item.file.id, file);
-		}
-
-		change(({ items }) => {
-			items.push(...musicItems);
-		});
-	}
-
-	return {
-		collection: doc?.items ?? [],
-		addFilesToCollection,
-		activeMedia,
-		setActiveMedia,
-	};
-}
+import { copyToPrivateFileSystem, exist, getFile } from "@/storage/opfs";
+import { getResourceDelegation } from "@/auth/permissions";
+import { useRootDocument } from "@/auth/useRootDocument";
+import { useUser } from "@/auth/useUser";
 
 async function getSyncServerDid(syncServer: string) {
 	const res = await fetch(`http://${syncServer}/media/did`);
@@ -70,7 +30,11 @@ async function syncLocalFilesToServer(
 
 	const serverDid = await getSyncServerDid(syncServer);
 
-	const token = await getAuthToken(user, serverDid, `media/sync-check`);
+	const token = await getResourceDelegation(
+		user,
+		serverDid,
+		`media/sync-check`,
+	);
 
 	const res = await fetch(`http://${syncServer}/media/sync-check`, {
 		method: "POST",
@@ -94,7 +58,11 @@ async function syncLocalFilesToServer(
 
 		if (!musicFile) continue;
 
-		const token = await getAuthToken(user, serverDid, `media/${musicFile.id}`);
+		const token = await getResourceDelegation(
+			user,
+			serverDid,
+			`media/${musicFile.id}`,
+		);
 
 		await fetch(`http://${syncServer}/media/${rootOwner}/${musicFile.id}`, {
 			method: "PUT",
@@ -119,7 +87,7 @@ async function pullMissingFilesFromServer(
 
 	for (const musicFile of files) {
 		if (!(await exist(musicFile.id))) {
-			const token = await getAuthToken(
+			const token = await getResourceDelegation(
 				user,
 				serverDid,
 				`media/${musicFile.id}`,
