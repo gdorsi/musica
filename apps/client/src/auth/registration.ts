@@ -15,6 +15,23 @@ import {
 import { AuthStorage } from "./lib/storage";
 import { getDeviceDelegation } from "./permissions";
 
+export async function trackOwneship(
+	syncServer: string,
+	user: string,
+	documentId: string,
+) {
+	await fetch(`http://${syncServer}/auth/track-ownership`, {
+		method: "POST",
+		body: JSON.stringify({
+			user,
+			documentId,
+		}),
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+}
+
 export async function registerUser(payload: {
 	name: string;
 	syncServer?: string | undefined;
@@ -50,7 +67,7 @@ export async function registerUser(payload: {
 	};
 
 	await AuthStorage.storeUserData(user);
-	await AuthStorage.storeKeypair(user, keypair);
+	await AuthStorage.storeKeypair(user.id, keypair);
 
 	return { user, repo };
 }
@@ -58,7 +75,7 @@ export async function registerUser(payload: {
 export async function generateInvitationURL(user: User, target: Did) {
 	const url = new URL(location.origin);
 
-	const ucan = await getDeviceDelegation(user, target);
+	const ucan = await getDeviceDelegation(user.id, target);
 
 	url.search = "join";
 	url.hash = encodeURIComponent(
@@ -105,7 +122,7 @@ export async function joinDevice(invitation: string) {
 	};
 
 	await AuthStorage.storeUserData(user);
-	await AuthStorage.storeKeypair(user, keypair);
+	await AuthStorage.storeKeypair(user.id, keypair);
 	await AuthStorage.cleanTempJoinKeypair();
 
 	return true;
