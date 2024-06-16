@@ -27,8 +27,17 @@ import { WaveForm } from "../components/recipes/waveform";
 function App() {
 	useMusicCollectionMediaSync();
 
-	const mediaPlayer = useMediaPlayer();
 	const musicCollection = useMusicCollection();
+	const mediaPlayer = useMediaPlayer({
+		onMediaEnd() {
+			const next = musicCollection.getNextSong();
+
+			if (next) {
+				handleMediaSelect(next);
+			}
+		},
+	});
+
 	const [loading, setLoading] = useState(false);
 	async function handleFileLoad(evt: React.ChangeEvent<HTMLInputElement>) {
 		await musicCollection.addFilesToCollection(evt.target.files);
