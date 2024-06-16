@@ -1,4 +1,4 @@
-import { Repo } from "@automerge/automerge-repo";
+import { DocumentId, Repo } from "@automerge/automerge-repo";
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket";
 import { NodeFSStorageAdapter } from "@automerge/automerge-repo-storage-nodefs";
 
@@ -25,14 +25,27 @@ export const owenship = {
 			Object.assign(owenship.value, value);
 		} catch (err) {}
 	},
-	claim(dir: string, user: string, documentId: string) {
-		if (owenship.value[documentId]) return;
+	async get(dir: string, repo: Repo, documentId: string) {
+		if (!owenship.value[documentId]) {
+			const doc = repo.find<{ owner: string }>(documentId as DocumentId);
 
-		owenship.value[documentId] = user;
+			await doc.whenReady(["unavailable", "ready"]);
 
-		fs.writeFile(`${dir}/ownership.json`, JSON.stringify(owenship.value));
-	},
-	get(documentId: string) {
+			if (doc.state === "ready") {
+				const value = doc.docSync();
+
+				console.log(value);
+				if (value) {
+					owenship.value[documentId] = value.owner;
+				}
+			} else {
+				// The doc is not in the FS
+				return undefined;
+			}
+
+			fs.writeFile(`${dir}/ownership.json`, JSON.stringify(owenship.value));
+		}
+
 		return owenship.value[documentId];
 	},
 };
@@ -42,28 +55,31 @@ export async function createAutomergeRepo({
 	dir,
 }: AutomergeRepoParams) {
 	await fs.mkdir(dir, { recursive: true });
+	await owenship.load(dir);
 
 	const accessControl = new AccessControlProvider({
 		async validateDocumentAccess(message) {
 			if (!message.documentId) return true;
 			if (!message.Authorization) return false;
 
-			// If not claimed, claim the ownership of the document
+			const ownerDid = await owenship.get(dir, repo, message.documentId);
 
-			owenship.claim(dir, message.senderId, message.documentId);
+			// The document is not in the storagr
+			// Let the user write
+			if (!ownerDid) return true;
 
 			const result = await validateUserAccess({
 				auth: message.Authorization,
 				permission: "write",
 				resource: `automerge/${message.documentId}`,
-				ownerDid: owenship.get(message.documentId),
+				ownerDid,
 			});
 
 			return result.ok;
 		},
 	});
 
-	return new Repo({
+	const repo = new Repo({
 		network: [accessControl.wrap(new NodeWSServerAdapter(socket))],
 		storage: new NodeFSStorageAdapter(dir),
 		peerId: await getServiceDid(),

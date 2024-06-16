@@ -3,7 +3,11 @@ import { AudioManager } from "./AudioManager";
 
 export type PlayState = "pause" | "play";
 
-export function useMediaPlayer() {
+type MediaPlayerParams = {
+	onMediaEnd?: () => void;
+};
+
+export function useMediaPlayer(params: MediaPlayerParams) {
 	const audioManager = useMemo(() => new AudioManager(), []);
 
 	const [playState, setPlayState] = useState<PlayState>("pause");
@@ -20,6 +24,7 @@ export function useMediaPlayer() {
 
 		const onEnd = () => {
 			setPlayState("pause");
+			params.onMediaEnd?.();
 		};
 
 		audioManager.mediaElement.addEventListener("timeupdate", onTimeUpdate);
@@ -29,7 +34,7 @@ export function useMediaPlayer() {
 			audioManager.mediaElement.removeEventListener("timeupdate", onTimeUpdate);
 			audioManager.mediaElement.removeEventListener("ended", onEnd);
 		};
-	}, [audioManager.mediaElement]);
+	}, [audioManager.mediaElement, params.onMediaEnd]);
 
 	async function playMedia(file: File) {
 		// Wait for the previous load to finish
