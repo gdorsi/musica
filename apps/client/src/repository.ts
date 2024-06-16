@@ -23,8 +23,6 @@ export function createRepository(userId: User["id"], syncServers: string[]) {
 						`automerge/${message.documentId}`,
 					);
 
-					console.log(message, auth);
-
 					return {
 						...message,
 						Authorization: auth,
