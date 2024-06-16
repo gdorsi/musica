@@ -28,7 +28,7 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 		audioManager.mediaElement.addEventListener("timeupdate", onTimeUpdate);
 		audioManager.mediaElement.addEventListener("ended", onEnd);
 
-		() => {
+		return () => {
 			audioManager.mediaElement.removeEventListener("timeupdate", onTimeUpdate);
 			audioManager.mediaElement.removeEventListener("ended", onEnd);
 		};
