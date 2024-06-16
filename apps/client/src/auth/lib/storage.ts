@@ -36,11 +36,11 @@ export const AuthStorage = {
 
 		return idb.set("ucan-proofs", [proof]);
 	},
-	getKeypair(user: User) {
-		return getKeypairFromStorage(user.id);
+	getKeypair(userId: User["id"]) {
+		return getKeypairFromStorage(userId);
 	},
-	storeKeypair(user: User, keypair: ucans.EcdsaKeypair) {
-		return idb.set(user.id, keypair);
+	storeKeypair(userId: User["id"], keypair: ucans.EcdsaKeypair) {
+		return idb.set(userId, keypair);
 	},
 	getTempJoinKeypair() {
 		return getKeypairFromStorage("joinKeypair");

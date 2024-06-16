@@ -4,11 +4,11 @@ import { type Did, type User } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 
 export async function getResourceDelegation(
-	user: User,
+	userId: User["id"],
 	serviceDid: Did,
 	resource: string,
 ) {
-	const keypair = await AuthStorage.getKeypair(user);
+	const keypair = await AuthStorage.getKeypair(userId);
 	const proofs = await AuthStorage.getUcanProofs();
 
 	const ucan = await ucans.build({
@@ -31,8 +31,8 @@ export async function getResourceDelegation(
 	return ucans.encode(ucan);
 }
 
-export async function getDeviceDelegation(user: User, target: Did) {
-	const keypair = await AuthStorage.getKeypair(user);
+export async function getDeviceDelegation(userId: User["id"], target: Did) {
+	const keypair = await AuthStorage.getKeypair(userId);
 	const proofs = await AuthStorage.getUcanProofs();
 
 	const ucan = await ucans.build({

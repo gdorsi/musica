@@ -11,14 +11,7 @@ import { copyToPrivateFileSystem, exist, getFile } from "@/storage/opfs";
 import { getResourceDelegation } from "@/auth/permissions";
 import { useRootDocument } from "@/auth/useRootDocument";
 import { useUser } from "@/auth/useUser";
-
-async function getSyncServerDid(syncServer: string) {
-	const res = await fetch(`http://${syncServer}/media/did`);
-
-	const { did } = await res.json();
-
-	return did as Did;
-}
+import { getSyncServerDid } from "@/auth/auth";
 
 async function syncLocalFilesToServer(
 	user: User,
@@ -31,7 +24,7 @@ async function syncLocalFilesToServer(
 	const serverDid = await getSyncServerDid(syncServer);
 
 	const token = await getResourceDelegation(
-		user,
+		user.id,
 		serverDid,
 		`media/sync-check`,
 	);
@@ -59,7 +52,7 @@ async function syncLocalFilesToServer(
 		if (!musicFile) continue;
 
 		const token = await getResourceDelegation(
-			user,
+			user.id,
 			serverDid,
 			`media/${musicFile.id}`,
 		);
@@ -88,7 +81,7 @@ async function pullMissingFilesFromServer(
 	for (const musicFile of files) {
 		if (!(await exist(musicFile.id))) {
 			const token = await getResourceDelegation(
-				user,
+				user.id,
 				serverDid,
 				`media/${musicFile.id}`,
 			);

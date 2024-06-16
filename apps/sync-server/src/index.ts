@@ -1,12 +1,20 @@
 import { serve } from "@hono/node-server";
-import { createMediaServer } from "./MediaServer";
-import { NodeFSMediaStorageAdapter } from "./NodeFSMediaStorageAdapter";
+import { addMediaServerRoutes } from "./media/MediaServer";
+import { NodeFSMediaStorageAdapter } from "./media/NodeFSMediaStorageAdapter";
 import { WebSocketServer } from "ws";
-import { createAutomergeRepo } from "./AutomergeRepo";
+import { createAutomergeRepo } from "./automerge";
+import { createServer } from "./server";
+import { addAuthRoutes } from "./auth";
 
-const app = await createMediaServer({
+const app = createServer({ allowedOrigins: ["*"] });
+
+addMediaServerRoutes({
 	storage: new NodeFSMediaStorageAdapter("storage/media"),
-	allowedOrigins: ["*"],
+	app,
+});
+
+addAuthRoutes({
+	app,
 });
 
 const server = serve(app, (info) => {
