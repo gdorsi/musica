@@ -84,9 +84,9 @@ function App() {
 
 	return (
 		<>
-			<div className="grid lg:grid-cols-5 min-h-screen">
+			<div className="grid grid-cols-5 min-h-screen">
 				<Sidebar />
-				<div className="col-span-3 lg:col-span-4 lg:border-l flex flex-col justify-between">
+				<div className="col-span-4 lg:border-l flex flex-col justify-between">
 					<div className="h-full px-4 py-6 lg:px-8 overflow-auto">
 						<div className="flex items-center justify-between mb-4">
 							<Input
@@ -174,18 +174,10 @@ function App() {
 													{item.title}
 												</TableCell>
 												<TableCell className="w-[30px]">
-													{musicCollection.activeMedia &&
-														isCurrentActiveMedia && (
-															<div>
-																{Math.ceil(
-																	musicCollection.activeMedia.duration / 60,
-																)}
-																:
-																{Math.ceil(
-																	musicCollection.activeMedia.duration % 60,
-																)}
-															</div>
-														)}
+													<div>
+														{Math.ceil(item.duration / 60)}:
+														{Math.ceil(item.duration % 60)}
+													</div>
 												</TableCell>
 												<TableCell className="w-[50px]">
 													<button
