@@ -21,6 +21,12 @@ export async function getFile(fileName: string) {
 	return file;
 }
 
+export async function deleteFile(fileName: string) {
+	const root = await navigator.storage.getDirectory();
+
+	return root.removeEntry(fileName);
+}
+
 export async function exist(fileName: string) {
 	const root = await navigator.storage.getDirectory();
 

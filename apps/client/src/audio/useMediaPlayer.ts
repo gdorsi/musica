@@ -11,9 +11,7 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 	const audioManager = useMemo(() => new AudioManager(), []);
 
 	const [playState, setPlayState] = useState<PlayState>("pause");
-	const [waveFormData, setWaveFormData] = useState<number[] | null>(null);
 	const [currentTime, setCurrentTime] = useState<number>(0);
-	const [duration, setDuration] = useState<number>(0);
 
 	const previousMediaLoad = useRef<Promise<unknown>>(Promise.resolve());
 
@@ -41,10 +39,7 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 		// to avoid to incur into concurrency issues
 		await previousMediaLoad.current;
 
-		const promise = Promise.all([
-			audioManager.getWaveformData(file, 200).then(setWaveFormData),
-			audioManager.loadAudio(file),
-		]);
+		const promise = audioManager.loadAudio(file);
 
 		previousMediaLoad.current = promise;
 
@@ -52,7 +47,6 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 
 		audioManager.play();
 		setPlayState("play");
-		setDuration(audioManager.mediaElement.duration);
 		setCurrentTime(0);
 	}
 
@@ -76,9 +70,7 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 	return {
 		currentTime,
 		setVolume,
-		duration,
 		seek,
-		waveFormData,
 		playState,
 		playMedia,
 		togglePlayState,

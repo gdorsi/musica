@@ -16,6 +16,8 @@ export const MusicItemSchema = z.object({
 	file: MusicFileSchema,
 	title: z.string(),
 	description: z.string(),
+	duration: z.number(),
+	waveform: z.array(z.number()),
 });
 export type MusicItem = z.infer<typeof MusicItemSchema>;
 
