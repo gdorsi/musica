@@ -1,7 +1,8 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { useState } from "react";
 import type { MusicCollection, MusicItem } from "./schema";
-import { copyToPrivateFileSystem, getFile } from "@/storage/opfs";
+import { getAudioFileData } from "../audio/getAudioFileData";
+import { copyToPrivateFileSystem, deleteFile, getFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
 
 export function useMusicCollection() {
@@ -18,10 +19,13 @@ export function useMusicCollection() {
 		const musicItems: MusicItem[] = [];
 
 		for (const file of files) {
+			const data = await getAudioFileData(file);
 			const item: MusicItem = {
 				id: crypto.randomUUID(),
 				title: file.name.replace(/\..+?$/, ""),
 				description: "",
+				duration: data.duration,
+				waveform: data.waveform,
 				file: {
 					id: crypto.randomUUID(),
 					name: file.name,
@@ -58,9 +62,22 @@ export function useMusicCollection() {
 		return getFile(item.file.id);
 	}
 
+	async function deleteItem(item: MusicItem) {
+		change((doc) => {
+			const index = doc.items.findIndex(({ id }) => id === item.id);
+
+			if (index === -1) return;
+
+			doc.items.splice(index, 1);
+		});
+
+		await deleteFile(item.file.id);
+	}
+
 	return {
 		collection,
 		addFilesToCollection,
+		deleteItem,
 		activeMedia,
 		setActiveMedia,
 		getNextSong,

@@ -1,12 +1,16 @@
-import { MediaPlayer } from "@/audio/useMediaPlayer";
+import { MusicItem } from "@/data/schema";
 import { cn } from "@/ui/utils";
 
 export function WaveForm(props: {
-	mediaPlayer: MediaPlayer;
+	activeMedia: MusicItem;
+	currentTime: number;
+	isPlaying: boolean;
 	height: number;
+	onSeek(time: number): void;
 }) {
-	const { mediaPlayer, height } = props;
-	const { waveFormData, duration, currentTime } = mediaPlayer;
+	const { activeMedia, currentTime, height } = props;
+	const waveFormData = activeMedia.waveform;
+	const duration = activeMedia.duration;
 
 	if (waveFormData === null) {
 		return (
@@ -20,10 +24,9 @@ export function WaveForm(props: {
 
 	const barCount = waveFormData.length;
 	const activeBar = Math.ceil(barCount * (currentTime / duration));
-	const isPlaying = mediaPlayer.playState === "play";
 
 	function seek(i: number) {
-		mediaPlayer.seek((i / barCount) * duration);
+		props.onSeek((i / barCount) * duration);
 	}
 
 	return (
@@ -43,7 +46,7 @@ export function WaveForm(props: {
 					className={cn(
 						"w-1 transition-colors rounded-none",
 						activeBar >= i ? "bg-gray-600" : "bg-gray-400",
-						activeBar === i && isPlaying && "animate-pulse",
+						activeBar === i && props.isPlaying && "animate-pulse",
 					)}
 					style={{
 						height: height * value,

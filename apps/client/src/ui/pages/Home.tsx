@@ -70,10 +70,13 @@ function App() {
 		mediaPlayer.setVolume(event.currentTarget.valueAsNumber);
 	}
 
-	function handleDelete(event: React.MouseEvent<HTMLButtonElement>) {
+	function handleDelete(
+		event: React.MouseEvent<HTMLButtonElement>,
+		item: MusicItem,
+	) {
 		event.stopPropagation();
 
-		alert("Delete not implemented yet!");
+		musicCollection.deleteItem(item);
 	}
 
 	const isPlaying = mediaPlayer.playState !== "pause" || loading;
@@ -171,17 +174,23 @@ function App() {
 													{item.title}
 												</TableCell>
 												<TableCell className="w-[30px]">
-													{isCurrentActiveMedia && (
-														<div>
-															{Math.ceil(mediaPlayer.duration / 60)}:
-															{Math.ceil(mediaPlayer.duration % 60)}
-														</div>
-													)}
+													{musicCollection.activeMedia &&
+														isCurrentActiveMedia && (
+															<div>
+																{Math.ceil(
+																	musicCollection.activeMedia.duration / 60,
+																)}
+																:
+																{Math.ceil(
+																	musicCollection.activeMedia.duration % 60,
+																)}
+															</div>
+														)}
 												</TableCell>
 												<TableCell className="w-[50px]">
 													<button
 														type="button"
-														onClick={handleDelete}
+														onClick={(e) => handleDelete(e, item)}
 														className="w-[30px] hidden group-hover:grid h-full items-center border-none"
 													>
 														<MdDelete size={30} />
@@ -199,7 +208,15 @@ function App() {
 						{loading ? (
 							<div className="w-8 h-8 border-t  border-black rounded-full animate-spin" />
 						) : (
-							<WaveForm mediaPlayer={mediaPlayer} height={50} />
+							musicCollection.activeMedia && (
+								<WaveForm
+									activeMedia={musicCollection.activeMedia}
+									currentTime={mediaPlayer.currentTime}
+									isPlaying={isPlaying}
+									onSeek={mediaPlayer.seek}
+									height={50}
+								/>
+							)
 						)}
 						<div className="flex items-center space-x-12 my-4">
 							<button
