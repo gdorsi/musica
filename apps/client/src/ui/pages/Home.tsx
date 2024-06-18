@@ -1,28 +1,24 @@
 import { Button } from "../components/ui/button";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
-import { MdDelete } from "react-icons/md";
-
 import {
 	FaPause,
 	FaPlay,
-	FaPlayCircle,
 	FaStepBackward,
 	FaStepForward,
 	FaVolumeUp,
 } from "react-icons/fa";
 import { useMusicCollection } from "@/data/useMusicCollection";
 import type { MusicItem } from "@/data/schema";
-import { Separator } from "@radix-ui/react-separator";
 import { Input } from "../components/ui/input";
-import { Table, TableBody, TableCell, TableRow } from "../components/ui/table";
 import { useState } from "react";
 import { AddNewDevice } from "../components/recipes/add-new-device";
-import { cn } from "../utils";
 import { useMusicCollectionMediaSync } from "@/data/useMusicCollectionMediaSync";
 import { useMediaPlayer } from "@/audio/useMediaPlayer";
 import { Sidebar } from "../components/recipes/sidebar";
 import { WaveForm } from "../components/recipes/waveform";
+import { TrackList } from "../components/recipes/track-list";
+import { FileDropArea } from "../components/ui/drop-area";
 
 function App() {
 	useMusicCollectionMediaSync();
@@ -66,27 +62,25 @@ function App() {
 		handleMediaSelect(musicCollection.getPrevSong());
 	}
 
-	function handleVolumeChange(event: React.ChangeEvent<HTMLInputElement>) {
-		mediaPlayer.setVolume(event.currentTarget.valueAsNumber);
-	}
-
-	function handleDelete(
-		event: React.MouseEvent<HTMLButtonElement>,
-		item: MusicItem,
-	) {
-		event.stopPropagation();
-
-		musicCollection.deleteItem(item);
+	function handleVolumeChange(evt: React.ChangeEvent<HTMLInputElement>) {
+		mediaPlayer.setVolume(evt.currentTarget.valueAsNumber);
 	}
 
 	const isPlaying = mediaPlayer.playState !== "pause" || loading;
 	const noSongLoaded = !musicCollection.activeMedia;
 
+	function handleMediaUpdate(item: MusicItem, patch: Partial<MusicItem>) {
+		musicCollection.updateItem(item, patch);
+	}
+
 	return (
 		<>
 			<div className="grid grid-cols-5 min-h-screen">
 				<Sidebar />
-				<div className="col-span-4 lg:border-l flex flex-col justify-between">
+				<FileDropArea
+					onDrop={musicCollection.addFilesToCollection}
+					className="col-span-4 lg:border-l flex flex-col justify-between"
+				>
 					<div className="h-full px-4 py-6 lg:px-8 overflow-auto">
 						<div className="flex items-center justify-between mb-4">
 							<Input
@@ -114,86 +108,14 @@ function App() {
 								<AddNewDevice />
 							</div>
 						</div>
-						<h2 className="text-2xl font-semibold tracking-tight mt-5">
-							Tracks
-						</h2>
-						<Separator className="my-4" />
-						<div>
-							<Table>
-								<TableBody>
-									{musicCollection.collection.map((item, i) => {
-										const isCurrentActiveMedia =
-											item === musicCollection.activeMedia;
-										return (
-											<TableRow
-												key={item.id}
-												onClick={() => handleMediaSelect(item)}
-												className={cn(
-													"group hover:bg-gray-100",
-													!isCurrentActiveMedia
-														? " text-gray-600"
-														: "bg-gray-200 text-black",
-												)}
-											>
-												<TableCell className="w-1">
-													<div className="h-full grid items-center text-center w-[30px]">
-														<span
-															className={cn(
-																!isCurrentActiveMedia
-																	? "group-hover:hidden"
-																	: "hidden",
-																"font-bold",
-															)}
-														>
-															{i}
-														</span>
-														<button
-															type="button"
-															className={cn(
-																!isCurrentActiveMedia &&
-																	"hidden group-hover:block",
-																"border-none ",
-															)}
-														>
-															{isCurrentActiveMedia && isPlaying ? (
-																<FaPause size={30} />
-															) : (
-																<FaPlayCircle size={30} />
-															)}
-														</button>
-													</div>
-												</TableCell>
-												<TableCell className="w-12">
-													<img
-														src="https://placehold.co/512x512"
-														alt={`${item.title} cover`}
-														className="w-full h-auto"
-													/>
-												</TableCell>
-												<TableCell className="font-medium">
-													{item.title}
-												</TableCell>
-												<TableCell className="w-[30px]">
-													<div>
-														{Math.ceil(item.duration / 60)}:
-														{Math.ceil(item.duration % 60)}
-													</div>
-												</TableCell>
-												<TableCell className="w-[50px]">
-													<button
-														type="button"
-														onClick={(e) => handleDelete(e, item)}
-														className="w-[30px] hidden group-hover:grid h-full items-center border-none"
-													>
-														<MdDelete size={30} />
-													</button>
-												</TableCell>
-											</TableRow>
-										);
-									})}
-								</TableBody>
-							</Table>
-						</div>
+						<TrackList
+							activeMedia={musicCollection.activeMedia}
+							isPlaying={isPlaying}
+							onMediaDelete={musicCollection.deleteItem}
+							onMediaSelect={handleMediaSelect}
+							onMediaUpdate={handleMediaUpdate}
+							tracks={musicCollection.collection}
+						/>
 					</div>
 
 					<div className="w-full border-t border-gray-200 bg-white flex flex-col items-center fixed bottom-0 left-0 lg:right-[20%] pt-6">
@@ -262,7 +184,7 @@ function App() {
 							/>
 						</div>
 					</div>
-				</div>
+				</FileDropArea>
 			</div>
 		</>
 	);

@@ -22,7 +22,7 @@ export function useMusicCollection() {
 			const data = await getAudioFileData(file);
 			const item: MusicItem = {
 				id: crypto.randomUUID(),
-				title: file.name.replace(/\..+?$/, ""),
+				title: file.name,
 				description: "",
 				duration: data.duration,
 				waveform: data.waveform,
@@ -74,10 +74,23 @@ export function useMusicCollection() {
 		await deleteFile(item.file.id);
 	}
 
+	async function updateItem(item: MusicItem, patch: Partial<MusicItem>) {
+		change((doc) => {
+			const index = doc.items.findIndex(({ id }) => id === item.id);
+
+			if (index === -1) return;
+
+			Object.assign(doc.items[index], patch);
+		});
+
+		await deleteFile(item.file.id);
+	}
+
 	return {
 		collection,
 		addFilesToCollection,
 		deleteItem,
+		updateItem,
 		activeMedia,
 		setActiveMedia,
 		getNextSong,
@@ -85,3 +98,5 @@ export function useMusicCollection() {
 		getMusicItemFile,
 	};
 }
+
+export type MusicCollectionApi = ReturnType<typeof useMusicCollection>;
