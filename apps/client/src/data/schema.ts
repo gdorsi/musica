@@ -51,7 +51,7 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 export const JoinDevicePayloadSchema = z.object({
-	u: z.string(),
-	d: z.string().refine(isValidAutomergeUrl),
-	s: z.string(),
+	u: z.string(), // ucan delegation
+	d: z.string().refine(isValidAutomergeUrl), // root document url
+	s: z.string(), // sync server
 });

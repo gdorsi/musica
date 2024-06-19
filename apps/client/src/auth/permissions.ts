@@ -7,6 +7,7 @@ export async function getResourceDelegation(
 	userId: User["id"],
 	serviceDid: Did,
 	resource: string,
+	permission: "read" | "write",
 ) {
 	const keypair = await AuthStorage.getKeypair(userId);
 	const proofs = await AuthStorage.getUcanProofs();
@@ -22,7 +23,10 @@ export async function getResourceDelegation(
 					scheme: "musica",
 					hierPart: resource,
 				},
-				can: ucans.capability.ability.SUPERUSER,
+				can: {
+					namespace: "musica",
+					segments: [permission],
+				},
 			},
 		],
 		proofs,

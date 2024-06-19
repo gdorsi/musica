@@ -27,6 +27,7 @@ async function syncLocalFilesToServer(
 		user.id,
 		serverDid,
 		`media/sync-check`,
+		"read",
 	);
 
 	const res = await fetch(`http://${syncServer}/media/sync-check`, {
@@ -55,6 +56,7 @@ async function syncLocalFilesToServer(
 			user.id,
 			serverDid,
 			`media/${musicFile.id}`,
+			"write",
 		);
 
 		await fetch(`http://${syncServer}/media/${rootOwner}/${musicFile.id}`, {
@@ -84,6 +86,7 @@ async function pullMissingFilesFromServer(
 				user.id,
 				serverDid,
 				`media/${musicFile.id}`,
+				"read",
 			);
 
 			const res = await fetch(
