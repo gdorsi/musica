@@ -13,11 +13,19 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 	const [playState, setPlayState] = useState<PlayState>("pause");
 	const [currentTime, setCurrentTime] = useState<number>(0);
 
-	const previousMediaLoad = useRef<Promise<unknown>>(Promise.resolve());
+	const previousMediaLoad = useRef<Promise<unknown>>();
 
 	useEffect(() => {
 		const onTimeUpdate = () => {
 			setCurrentTime(audioManager.mediaElement.currentTime);
+		};
+
+		const onPlay = () => {
+			setPlayState("play");
+		};
+
+		const onPause = () => {
+			setPlayState("pause");
 		};
 
 		const onEnd = () => {
@@ -27,10 +35,14 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 
 		audioManager.mediaElement.addEventListener("timeupdate", onTimeUpdate);
 		audioManager.mediaElement.addEventListener("ended", onEnd);
+		audioManager.mediaElement.addEventListener("play", onPlay);
+		audioManager.mediaElement.addEventListener("pause", onPause);
 
 		return () => {
 			audioManager.mediaElement.removeEventListener("timeupdate", onTimeUpdate);
 			audioManager.mediaElement.removeEventListener("ended", onEnd);
+			audioManager.mediaElement.removeEventListener("play", onPlay);
+			audioManager.mediaElement.removeEventListener("pause", onPause);
 		};
 	}, [audioManager.mediaElement, params.onMediaEnd]);
 
@@ -51,6 +63,8 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 	}
 
 	async function togglePlayState() {
+		if (!previousMediaLoad.current) return;
+
 		if (playState === "pause") {
 			audioManager.play();
 			setPlayState("play");
@@ -59,6 +73,21 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 			setPlayState("pause");
 		}
 	}
+
+	useEffect(() => {
+		const handler = (evt: KeyboardEvent) => {
+			if (evt.key === " " && evt.target === document.body) {
+				evt.preventDefault();
+				togglePlayState();
+			}
+		};
+
+		document.body.addEventListener("keydown", handler);
+
+		return () => {
+			document.body.removeEventListener("keydown", handler);
+		};
+	});
 
 	function seek(time: number) {
 		audioManager.mediaElement.currentTime = time;
