@@ -16,4 +16,8 @@ To run the project in dev mode run `pnpm run dev`
 
 We use [shadcdn/ui](https://ui.shadcn.com/) for the UI components.
 
-To add a new component run `pnpx shadcn-ui@latest add [component]`
+To add a new component run:
+- From the workspace root `pnpm component-add [component]`
+- From apps/client: `pnpx shadcn-ui@latest add [component]`
+
+The outcome is the same, so use the one you prefer

@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "pnpm run -r build",
 		"dev": "pnpm run -r dev",
-		"typecheck": "pnpm run -r typecheck"
+		"typecheck": "pnpm run -r typecheck",
+		"component-add": "cd apps/client && pnpx shadcn-ui@latest add"
 	},
 	"workspaces": {
 		"packages": ["apps/client", "apps/sync-server"]
