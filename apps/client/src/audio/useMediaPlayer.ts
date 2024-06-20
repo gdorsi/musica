@@ -67,10 +67,8 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 
 		if (playState === "pause") {
 			audioManager.play();
-			setPlayState("play");
 		} else {
 			audioManager.pause();
-			setPlayState("pause");
 		}
 	}
 
@@ -90,6 +88,8 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 	});
 
 	function seek(time: number) {
+		if (playState !== "play") audioManager.play();
+
 		audioManager.mediaElement.currentTime = time;
 	}
 	function setVolume(volume: number) {

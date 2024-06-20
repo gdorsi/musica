@@ -5,8 +5,6 @@ import { useUser } from "./useUser";
 export const useRootDocument = () => {
 	const user = useUser();
 
-	const [rootDocument] = useDocument<RootDocument>(user.rootDocument);
-
 	// TODO: Maybe trigger suspense when the document is undefined?
-	return rootDocument;
+	return useDocument<RootDocument>(user.rootDocument);
 };

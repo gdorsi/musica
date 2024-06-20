@@ -30,6 +30,16 @@ export const MusicCollectionSchema = z.object({
 });
 export type MusicCollection = z.infer<typeof MusicCollectionSchema>;
 
+export const PlaylistVersion = "0.0.1";
+export const PlaylistSchema = z.object({
+	id: z.string().uuid(),
+	name: z.string(),
+	version: z.literal(MusicCollectionVersion),
+	items: z.array(MusicItemSchema),
+	owner: DidSchema,
+});
+export type Playlist = z.infer<typeof PlaylistSchema>;
+
 export const RootDocumentVersion = "0.0.1";
 export const RootDocumentSchema = z.object({
 	version: z.literal(RootDocumentVersion),

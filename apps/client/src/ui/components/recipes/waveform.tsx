@@ -45,8 +45,9 @@ export function WaveForm(props: {
 					onClick={() => seek(i)}
 					className={cn(
 						"w-1 transition-colors rounded-none",
-						activeBar >= i ? "bg-gray-600" : "bg-gray-400",
-						activeBar === i && props.isPlaying && "animate-pulse",
+						activeBar >= i ? "bg-gray-500" : "bg-gray-300",
+						"hover:bg-black hover:border-1 hover:border-solid hover:border-black",
+						"focus-visible:outline-black focus:outline-none",
 					)}
 					style={{
 						height: height * value,

@@ -6,7 +6,7 @@ import { copyToPrivateFileSystem, deleteFile, getFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
 
 export function useMusicCollection() {
-	const document = useRootDocument();
+	const [document] = useRootDocument();
 
 	const [doc, change] = useDocument<MusicCollection>(document?.musicCollection);
 
@@ -20,6 +20,7 @@ export function useMusicCollection() {
 
 		for (const file of files) {
 			const data = await getAudioFileData(file);
+
 			const item: MusicItem = {
 				id: crypto.randomUUID(),
 				title: file.name,
@@ -33,8 +34,9 @@ export function useMusicCollection() {
 				},
 			};
 
-			musicItems.push(item);
 			await copyToPrivateFileSystem(item.file.id, file);
+
+			musicItems.push(item);
 		}
 
 		change(({ items }) => {

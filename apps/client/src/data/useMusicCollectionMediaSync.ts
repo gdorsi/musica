@@ -109,21 +109,23 @@ async function pullMissingFilesFromServer(
 
 export function useMusicCollectionMediaSync() {
 	const user = useUser();
-	const documents = useRootDocument();
+	const [document] = useRootDocument();
 
-	const [doc] = useDocument<MusicCollection>(documents?.musicCollection);
+	const [musicCollection] = useDocument<MusicCollection>(
+		document?.musicCollection,
+	);
 
 	const files = useMemo(
-		() => doc?.items.map((item) => item.file) ?? [],
-		[doc?.items],
+		() => musicCollection?.items.map((item) => item.file) ?? [],
+		[musicCollection?.items],
 	);
 
 	// TODO: Move this logic into xstate and make it more resilient
 	useEffect(() => {
 		if (!files.length) return;
-		if (!doc) return;
+		if (!musicCollection) return;
 
-		syncLocalFilesToServer(user, doc.owner, files);
-		pullMissingFilesFromServer(user, doc.owner, files);
-	}, [user, files, doc]);
+		syncLocalFilesToServer(user, musicCollection.owner, files);
+		pullMissingFilesFromServer(user, musicCollection.owner, files);
+	}, [user, files, musicCollection]);
 }
