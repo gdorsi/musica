@@ -10,7 +10,7 @@ export function usePlaylists() {
 		rootDocument?.playlists ?? [],
 	);
 
-	async function createPlaylist(name: string) {
+	function createPlaylist(name: string) {
 		if (!rootDocument) return;
 
 		const handle = repo.create<Playlist>({
@@ -24,6 +24,8 @@ export function usePlaylists() {
 		change((rootDocument) => {
 			rootDocument.playlists.push(handle.url);
 		});
+
+		return handle.url;
 	}
 
 	return {
