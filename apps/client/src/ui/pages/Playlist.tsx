@@ -1,10 +1,7 @@
-import { useMusicCollectionMediaSync } from "@/data/useMusicCollectionMediaSync";
 import { usePlaylist } from "@/data/usePlaylist";
 import { Link, useParams } from "react-router-dom";
 
 export function Playlist() {
-	useMusicCollectionMediaSync();
-
 	const params = useParams<"documentId">();
 	const { playlist, updateName } = usePlaylist(params.documentId);
 

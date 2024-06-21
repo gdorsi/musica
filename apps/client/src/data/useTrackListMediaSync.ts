@@ -9,9 +9,9 @@ import type {
 } from "./schema";
 import { copyToPrivateFileSystem, exist, getFile } from "@/storage/opfs";
 import { getResourceDelegation } from "@/auth/permissions";
-import { useRootDocument } from "@/auth/useRootDocument";
 import { useUser } from "@/auth/useUser";
 import { getSyncServerDid } from "@/auth/auth";
+import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
 
 async function syncLocalFilesToServer(
 	user: User,
@@ -107,13 +107,12 @@ async function pullMissingFilesFromServer(
 	}
 }
 
-export function useMusicCollectionMediaSync() {
+export function useTrackListMediaSync(
+	trackId: DocumentId | AutomergeUrl | undefined,
+) {
 	const user = useUser();
-	const [document] = useRootDocument();
 
-	const [musicCollection] = useDocument<MusicCollection>(
-		document?.musicCollection,
-	);
+	const [musicCollection] = useDocument<MusicCollection>(trackId);
 
 	const files = useMemo(
 		() => musicCollection?.items.map((item) => item.file) ?? [],

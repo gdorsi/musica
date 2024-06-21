@@ -1,16 +1,16 @@
+import { usePlayerCurrentTime } from "@/audio/usePlayerCurrentTime";
 import { MusicItem } from "@/data/schema";
 import { cn } from "@/ui/utils";
 
 export function WaveForm(props: {
 	activeMedia: MusicItem;
-	currentTime: number;
-	isPlaying: boolean;
 	height: number;
-	onSeek(time: number): void;
 }) {
-	const { activeMedia, currentTime, height } = props;
+	const { activeMedia, height } = props;
 	const waveFormData = activeMedia.waveform;
 	const duration = activeMedia.duration;
+
+	const currentTime = usePlayerCurrentTime();
 
 	if (waveFormData === null) {
 		return (
@@ -23,10 +23,10 @@ export function WaveForm(props: {
 	}
 
 	const barCount = waveFormData.length;
-	const activeBar = Math.ceil(barCount * (currentTime / duration));
+	const activeBar = Math.ceil(barCount * (currentTime.value / duration));
 
 	function seek(i: number) {
-		props.onSeek((i / barCount) * duration);
+		currentTime.setValue((i / barCount) * duration);
 	}
 
 	return (

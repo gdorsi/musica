@@ -3,6 +3,7 @@ import { FaPause, FaPlayCircle } from "react-icons/fa";
 import type { MusicItem } from "@/data/schema";
 import { cn } from "@/ui/utils";
 import { TableRow, TableCell } from "../ui/table";
+import { usePlayState } from "@/audio/PlayState";
 
 type TrackProps = {
 	onMediaSelect: (item: MusicItem) => void;
@@ -11,7 +12,6 @@ type TrackProps = {
 	item: MusicItem;
 	isCurrentActiveMedia: boolean;
 	i: number;
-	isPlaying: boolean;
 };
 export function TrackRow({
 	isCurrentActiveMedia,
@@ -20,7 +20,6 @@ export function TrackRow({
 	onMediaSelect,
 	onMediaUpdate,
 	i,
-	isPlaying,
 }: TrackProps) {
 	function handleDelete(
 		event: React.MouseEvent<HTMLButtonElement>,
@@ -36,6 +35,9 @@ export function TrackRow({
 			title: evt.currentTarget.value,
 		});
 	}
+
+	const playState = usePlayState();
+	const isPlaying = isCurrentActiveMedia && playState.value === "play";
 
 	return (
 		<TableRow
@@ -65,11 +67,7 @@ export function TrackRow({
 								"hidden group-hover:block group-focus/button:block",
 						)}
 					>
-						{isCurrentActiveMedia && isPlaying ? (
-							<FaPause size={30} />
-						) : (
-							<FaPlayCircle size={30} />
-						)}
+						{isPlaying ? <FaPause size={30} /> : <FaPlayCircle size={30} />}
 					</span>
 				</button>
 			</TableCell>

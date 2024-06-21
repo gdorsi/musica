@@ -1,3 +1,5 @@
+import { createContext, useContext } from "react";
+
 export class AudioManager {
 	mediaElement: HTMLAudioElement;
 
@@ -44,3 +46,11 @@ export class AudioManager {
 		this.mediaElement.pause();
 	}
 }
+
+const context = createContext<AudioManager>(new AudioManager());
+
+export function useAudioManager() {
+	return useContext(context);
+}
+
+export const AudionManagerProvider = context.Provider;

@@ -1,16 +1,13 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import { useState } from "react";
 import type { MusicCollection, MusicItem } from "./schema";
 import { getAudioFileData } from "../audio/getAudioFileData";
-import { copyToPrivateFileSystem, deleteFile, getFile } from "@/storage/opfs";
+import { copyToPrivateFileSystem, deleteFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
 
 export function useMusicCollection() {
 	const [document] = useRootDocument();
 
 	const [doc, change] = useDocument<MusicCollection>(document?.musicCollection);
-
-	const [activeMedia, setActiveMedia] = useState<MusicItem | null>(null);
 
 	async function addFilesToCollection(files: FileList | null) {
 		if (!files) return;
@@ -46,24 +43,6 @@ export function useMusicCollection() {
 
 	const collection = doc?.items ?? [];
 
-	function getNextSong() {
-		const currentIndex = collection.findIndex((item) => item === activeMedia);
-		const nextIndex = (currentIndex + 1) % collection.length;
-
-		return collection[nextIndex];
-	}
-
-	function getPrevSong() {
-		const currentIndex = collection.findIndex((item) => item === activeMedia);
-		const previousIndex =
-			(currentIndex - 1 + collection.length) % collection.length;
-		return collection[previousIndex];
-	}
-
-	function getMusicItemFile(item: MusicItem) {
-		return getFile(item.file.id);
-	}
-
 	async function deleteItem(item: MusicItem) {
 		change((doc) => {
 			const index = doc.items.findIndex(({ id }) => id === item.id);
@@ -93,11 +72,6 @@ export function useMusicCollection() {
 		addFilesToCollection,
 		deleteItem,
 		updateItem,
-		activeMedia,
-		setActiveMedia,
-		getNextSong,
-		getPrevSong,
-		getMusicItemFile,
 	};
 }
 

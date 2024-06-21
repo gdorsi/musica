@@ -7,6 +7,7 @@ import { Registration } from "./ui/pages/Registration";
 import { getAuthData } from "./auth/auth";
 import { UserContext } from "./auth/useUser";
 import { Playlist } from "./ui/pages/Playlist";
+import { ActiveTrackProvider } from "./audio/ActiveTrackState";
 
 const router = createBrowserRouter([
 	{
@@ -29,7 +30,9 @@ export function Router() {
 	return (
 		<UserContext.Provider value={auth.user}>
 			<RepoContext.Provider value={auth.repo}>
-				<RouterProvider router={router} />
+				<ActiveTrackProvider>
+					<RouterProvider router={router} />
+				</ActiveTrackProvider>
 			</RepoContext.Provider>
 		</UserContext.Provider>
 	);
