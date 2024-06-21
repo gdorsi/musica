@@ -12,8 +12,11 @@ import { useMediaPlayer } from "@/audio/useMediaPlayer";
 import { WaveForm } from "../components/recipes/waveform";
 import { TrackList } from "../components/recipes/track-list";
 import { FileDropArea } from "../components/ui/drop-area";
+import { NewPlaylistButton } from "../components/recipes/add-new-playlist";
+import { usePlaylists } from "@/data/usePlaylists";
+import { Link } from "react-router-dom";
 
-function App() {
+export function Home() {
 	useMusicCollectionMediaSync();
 
 	const musicCollection = useMusicCollection();
@@ -68,6 +71,8 @@ function App() {
 
 	const [filter, setFilter] = useState("");
 
+	const { playlists } = usePlaylists();
+
 	return (
 		<div className="min-h-screen">
 			<FileDropArea
@@ -99,7 +104,15 @@ function App() {
 								</label>
 							</Button>
 							<AddNewDevice />
+							<NewPlaylistButton />
 						</div>
+					</div>
+					<div className="flex items-center gap-4 mb-4">
+						{playlists.map(([documentId, playlist]) => (
+							<Link key={documentId} to={`/playlist/${documentId}`}>
+								{playlist.name}
+							</Link>
+						))}
 					</div>
 					<TrackList
 						activeMedia={musicCollection.activeMedia}
@@ -182,5 +195,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;

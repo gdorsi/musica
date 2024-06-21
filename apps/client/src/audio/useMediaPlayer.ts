@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AudioManager } from "./AudioManager";
 
 export type PlayState = "pause" | "play";
@@ -7,9 +7,10 @@ type MediaPlayerParams = {
 	onMediaEnd?: () => void;
 };
 
-export function useMediaPlayer(params: MediaPlayerParams) {
-	const audioManager = useMemo(() => new AudioManager(), []);
+// Using a module instance to survive navigation
+const audioManager = new AudioManager();
 
+export function useMediaPlayer(params: MediaPlayerParams) {
 	const [playState, setPlayState] = useState<PlayState>("pause");
 	const [currentTime, setCurrentTime] = useState<number>(0);
 
@@ -44,7 +45,7 @@ export function useMediaPlayer(params: MediaPlayerParams) {
 			audioManager.mediaElement.removeEventListener("play", onPlay);
 			audioManager.mediaElement.removeEventListener("pause", onPause);
 		};
-	}, [audioManager.mediaElement, params.onMediaEnd]);
+	}, [params.onMediaEnd]);
 
 	async function playMedia(file: File) {
 		// Wait for the previous load to finish

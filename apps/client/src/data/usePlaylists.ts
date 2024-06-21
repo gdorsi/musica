@@ -1,14 +1,12 @@
 import { useDocuments, useRepo } from "@automerge/automerge-repo-react-hooks";
-import { Playlist, PlaylistVersion, type MusicCollection } from "./schema";
+import { Playlist, PlaylistVersion } from "./schema";
 import { useRootDocument } from "@/auth/useRootDocument";
 
 export function usePlaylists() {
 	const repo = useRepo();
 	const [rootDocument, change] = useRootDocument();
 
-	const playlists = useDocuments<MusicCollection>(
-		rootDocument?.playlists ?? [],
-	);
+	const playlists = useDocuments<Playlist>(rootDocument?.playlists ?? []);
 
 	function createPlaylist(name: string) {
 		if (!rootDocument) return;
@@ -25,12 +23,12 @@ export function usePlaylists() {
 			rootDocument.playlists.push(handle.url);
 		});
 
-		return handle.url;
+		return handle.documentId;
 	}
 
 	return {
 		createPlaylist,
-		playlists,
+		playlists: Object.entries(playlists),
 	};
 }
 
