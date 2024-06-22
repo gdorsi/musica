@@ -5,14 +5,14 @@ import { TrackList } from "../components/recipes/track-list";
 import { NewPlaylistButton } from "../components/recipes/add-new-playlist";
 import { usePlaylists } from "@/data/usePlaylists";
 import { Link } from "react-router-dom";
-import { useRootDocument } from "@/auth/useRootDocument";
 import { PlayerControls } from "../components/recipes/player-controls";
 import { TrackDropArea } from "../components/recipes/track-drop-area";
 import { TrackUploadButton } from "../components/recipes/track-upload-button";
+import { useUser } from "@/auth/useUser";
 
 export function Home() {
-	const [document] = useRootDocument();
-	const trackId = document?.musicCollection;
+	const user = useUser();
+	const trackId = user.rootDocument;
 
 	const [filter, setFilter] = useState("");
 

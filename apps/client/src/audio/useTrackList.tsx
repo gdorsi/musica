@@ -1,18 +1,21 @@
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
+import {
+	useDocument,
+	useDocuments,
+} from "@automerge/automerge-repo-react-hooks";
 import { getFile } from "@/storage/opfs";
 import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
-import { MusicCollection, MusicItem } from "@/data/schema";
+import { MusicItem, Playlist, RootDocument } from "@/data/schema";
 import { useMusicCollection } from "@/data/useMusicCollection";
-import { usePlayState } from "./PlayState";
+import { usePlayState } from "./usePlayState";
 import { useMediaPlayer } from "./useMediaPlayer";
 import { useActiveTrack } from "./ActiveTrackState";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
-	const [doc] = useDocument<MusicCollection>(trackId);
+	const [doc] = useDocument<Playlist | RootDocument>(trackId);
 
 	const { activeTrack, loading, setActiveTrack, setLoading } = useActiveTrack();
 
-	const tracks = doc?.items ?? [];
+	const tracks = Object.values(useDocuments<MusicItem>(doc?.tracks));
 
 	function getNextSong() {
 		const currentIndex = tracks.findIndex((item) => item === activeTrack);

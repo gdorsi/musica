@@ -46,4 +46,6 @@ export async function createAutomergeRepo({
 		// know about and can ask for by ID.
 		sharePolicy: async () => false,
 	});
+
+	return repo;
 }

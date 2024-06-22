@@ -1,8 +1,17 @@
-import { type PeerId, isValidAutomergeUrl } from "@automerge/automerge-repo";
+import { type PeerId } from "@automerge/automerge-repo";
+import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
 import { z } from "zod";
 
-export const DidSchema = z.string().refine((_): _ is PeerId => true); // We use DID as PeerId for automerge
+// example did:key:zDnaeq4v2MQp7tQJagJEm9S1726tyk44ftrLdT5yaSu1aKdAW
+const didRe = /^did:key:[a-zA-Z0-9]{49}$/;
+
+export const DidSchema = z
+	.string()
+	.refine((value): value is PeerId => didRe.test(value)); // We use DID as PeerId for automerge
+
 export type Did = z.infer<typeof DidSchema>;
+
+const DocumentIdSchema = z.string().refine(isValidDocumentId);
 
 export const MusicFileSchema = z.object({
 	id: z.string().uuid(),
@@ -11,6 +20,7 @@ export const MusicFileSchema = z.object({
 });
 export type MusicFile = z.infer<typeof MusicFileSchema>;
 
+export const MusicItemVersion = 1;
 export const MusicItemSchema = z.object({
 	id: z.string().uuid(),
 	file: MusicFileSchema,
@@ -18,50 +28,43 @@ export const MusicItemSchema = z.object({
 	description: z.string(),
 	duration: z.number(),
 	waveform: z.array(z.number()),
+	version: z.literal(MusicItemVersion),
+	owner: DidSchema,
 });
 export type MusicItem = z.infer<typeof MusicItemSchema>;
 
-export const MusicCollectionVersion = "0.0.1";
-export const MusicCollectionSchema = z.object({
-	id: z.string().uuid(),
-	version: z.literal(MusicCollectionVersion),
-	items: z.array(MusicItemSchema),
-	owner: DidSchema,
-});
-export type MusicCollection = z.infer<typeof MusicCollectionSchema>;
-
-export const PlaylistVersion = "0.0.1";
+export const PlaylistVersion = 1;
 export const PlaylistSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string(),
-	version: z.literal(MusicCollectionVersion),
-	items: z.array(MusicItemSchema),
+	version: z.literal(PlaylistVersion),
+	tracks: z.array(DocumentIdSchema),
 	owner: DidSchema,
 });
 export type Playlist = z.infer<typeof PlaylistSchema>;
 
-export const RootDocumentVersion = "0.0.1";
+export const RootDocumentVersion = 1;
 export const RootDocumentSchema = z.object({
 	version: z.literal(RootDocumentVersion),
-	musicCollection: z.string().refine(isValidAutomergeUrl),
+	tracks: z.array(DocumentIdSchema),
 	// Not implemented yet
-	playlists: z.array(z.string().refine(isValidAutomergeUrl)),
+	playlists: z.array(DocumentIdSchema),
 	name: z.string(),
 	owner: DidSchema,
 });
 export type RootDocument = z.infer<typeof RootDocumentSchema>;
 
-export const UserVersion = "0.0.1";
+export const UserVersion = 1;
 export const UserSchema = z.object({
 	id: DidSchema,
 	version: z.literal(UserVersion),
-	rootDocument: z.string().refine(isValidAutomergeUrl),
+	rootDocument: DocumentIdSchema,
 	syncServers: z.array(z.string()),
 });
 export type User = z.infer<typeof UserSchema>;
 
 export const JoinDevicePayloadSchema = z.object({
 	u: z.string(), // ucan delegation
-	d: z.string().refine(isValidAutomergeUrl), // root document url
+	d: DocumentIdSchema, // root document url
 	s: z.string(), // sync server
 });

@@ -1,32 +1,31 @@
-import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import { useEffect, useMemo } from "react";
-import type {
-	Did,
-	MusicCollection,
-	MusicFile,
-	MusicItem,
-	User,
-} from "./schema";
+import {
+	useDocument,
+	useDocuments,
+} from "@automerge/automerge-repo-react-hooks";
+import { useEffect } from "react";
+import type { MusicItem, Playlist, RootDocument, User } from "./schema";
 import { copyToPrivateFileSystem, exist, getFile } from "@/storage/opfs";
 import { getResourceDelegation } from "@/auth/permissions";
 import { useUser } from "@/auth/useUser";
 import { getSyncServerDid } from "@/auth/auth";
-import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
+import { DocumentId } from "@automerge/automerge-repo";
 
 async function syncLocalFilesToServer(
 	user: User,
-	rootOwner: Did,
-	files: MusicFile[],
+	tracks: Record<DocumentId, MusicItem>,
 ) {
 	// TODO: sync tp multiple sync servers
 	const [syncServer] = user.syncServers;
 
 	const serverDid = await getSyncServerDid(syncServer);
 
+	const documentId = user.rootDocument;
+
+	// TODO: Capability check over the document list
 	const token = await getResourceDelegation(
 		user.id,
 		serverDid,
-		`media/sync-check`,
+		`media/${documentId}`,
 		"read",
 	);
 
@@ -37,29 +36,29 @@ async function syncLocalFilesToServer(
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
-			user: rootOwner,
-			list: files.map((file) => file.id),
+			documentId,
 		}),
 	});
 
 	if (!res.ok) return;
 
-	const { missing } = (await res.json()) as { missing: string[] };
+	const { missing } = (await res.json()) as { missing: DocumentId[] };
 
-	for (const fileId of missing) {
-		const file = await getFile(fileId);
-		const musicFile = files.find((i) => i.id === fileId);
+	for (const documentId of missing) {
+		const track = tracks[documentId];
 
-		if (!musicFile) continue;
+		if (!track) continue;
+
+		const file = await getFile(track.file.id);
 
 		const token = await getResourceDelegation(
 			user.id,
 			serverDid,
-			`media/${musicFile.id}`,
+			`media/${documentId}`,
 			"write",
 		);
 
-		await fetch(`http://${syncServer}/media/${rootOwner}/${musicFile.id}`, {
+		await fetch(`http://${syncServer}/media/${documentId}`, {
 			method: "PUT",
 			body: file,
 			headers: {
@@ -72,59 +71,49 @@ async function syncLocalFilesToServer(
 
 async function pullMissingFilesFromServer(
 	user: User,
-	rootOwner: Did,
-	files: MusicItem["file"][],
+	tracks: Record<DocumentId, MusicItem>,
 ) {
 	// TODO: Pull from multiple sync servers
 	const [syncServer] = user.syncServers;
 
 	const serverDid = await getSyncServerDid(syncServer);
 
-	for (const musicFile of files) {
-		if (!(await exist(musicFile.id))) {
+	for (const [documentId, item] of Object.entries(tracks)) {
+		if (!(await exist(item.file.id))) {
 			const token = await getResourceDelegation(
 				user.id,
 				serverDid,
-				`media/${musicFile.id}`,
+				`media/${documentId}`,
 				"read",
 			);
 
-			const res = await fetch(
-				`http://${syncServer}/media/${rootOwner}/${musicFile.id}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
+			const res = await fetch(`http://${syncServer}/media/${documentId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
 				},
-			);
+			});
 
 			if (res.ok) {
 				const blob = await res.blob();
 
-				await copyToPrivateFileSystem(musicFile.id, blob);
+				await copyToPrivateFileSystem(item.file.id, blob);
 			}
 		}
 	}
 }
 
-export function useTrackListMediaSync(
-	trackId: DocumentId | AutomergeUrl | undefined,
-) {
+export function useTrackListMediaSync(trackId: DocumentId | undefined) {
 	const user = useUser();
 
-	const [musicCollection] = useDocument<MusicCollection>(trackId);
+	const [doc] = useDocument<Playlist | RootDocument>(trackId);
 
-	const files = useMemo(
-		() => musicCollection?.items.map((item) => item.file) ?? [],
-		[musicCollection?.items],
-	);
+	const tracks = useDocuments<MusicItem>(doc?.tracks);
 
 	// TODO: Move this logic into xstate and make it more resilient
 	useEffect(() => {
-		if (!files.length) return;
-		if (!musicCollection) return;
+		if (user.syncServers.length === 0) return;
 
-		syncLocalFilesToServer(user, musicCollection.owner, files);
-		pullMissingFilesFromServer(user, musicCollection.owner, files);
-	}, [user, files, musicCollection]);
+		syncLocalFilesToServer(user, tracks);
+		pullMissingFilesFromServer(user, tracks);
+	}, [user, tracks]);
 }

@@ -1,13 +1,13 @@
 import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
 import { useMediaEndListener } from "@/audio/useMediaEndListener";
 import { usePlayerVolume } from "@/audio/usePlayerVolume";
-import { usePlayState } from "@/audio/PlayState";
+import { usePlayState } from "@/audio/usePlayState";
 import { useTrackList } from "@/audio/useTrackList";
-import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
+import { DocumentId } from "@automerge/automerge-repo";
 import { WaveForm } from "./waveform";
 
 export function PlayerControls(props: {
-	trackId: DocumentId | AutomergeUrl | undefined;
+	trackId: DocumentId | undefined;
 }) {
 	const { activeTrack, getNextSong, getPrevSong, loading, setActiveTrack } =
 		useTrackList(props.trackId);

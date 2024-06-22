@@ -13,14 +13,14 @@ export function usePlaylists() {
 
 		const handle = repo.create<Playlist>({
 			id: crypto.randomUUID(),
-			items: [],
+			tracks: [],
 			name,
 			owner: rootDocument?.owner,
 			version: PlaylistVersion,
 		});
 
 		change((rootDocument) => {
-			rootDocument.playlists.push(handle.url);
+			rootDocument.playlists.push(handle.documentId);
 		});
 
 		return handle.documentId;

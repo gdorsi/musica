@@ -2,8 +2,6 @@ import * as ucans from "@ucans/ucans";
 import { createRepository } from "../repository";
 
 import {
-	MusicCollectionSchema,
-	MusicCollectionVersion,
 	type User,
 	type RootDocument,
 	RootDocumentVersion,
@@ -42,18 +40,9 @@ export async function registerUser(payload: {
 	const did = DidSchema.parse(keypair.did());
 	const repo = createRepository(did, syncServers);
 
-	const musicCollection = repo.create(
-		MusicCollectionSchema.parse({
-			version: MusicCollectionVersion,
-			id: crypto.randomUUID(),
-			items: [],
-			owner: did,
-		}),
-	);
-
 	const rootDocument = repo.create<RootDocument>({
 		version: RootDocumentVersion,
-		musicCollection: musicCollection.url,
+		tracks: [],
 		playlists: [],
 		name: payload.name,
 		owner: did,
@@ -62,7 +51,7 @@ export async function registerUser(payload: {
 	const user: User = {
 		version: UserVersion,
 		id: did,
-		rootDocument: rootDocument.url,
+		rootDocument: rootDocument.documentId,
 		syncServers,
 	};
 
@@ -117,7 +106,7 @@ export async function joinDevice(invitation: string) {
 	const user: User = {
 		version: UserVersion,
 		id: did,
-		rootDocument: rootDocument.url,
+		rootDocument: rootDocument.documentId,
 		syncServers: [payload.s],
 	};
 

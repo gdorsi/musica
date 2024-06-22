@@ -5,19 +5,26 @@ import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
 import type { MediaStorageApi } from "./types";
 import { validateUserAccess } from "../auth";
+import { DocumentId, Repo } from "@automerge/automerge-repo";
+import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner";
+import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
 
-// example did:key:zDnaeq4v2MQp7tQJagJEm9S1726tyk44ftrLdT5yaSu1aKdAW
-const didRe = /^did:key:[a-zA-Z0-9]{49}$/;
-const didSchema = z.string().refine((string) => Boolean(string.match(didRe)));
+const documentIdSchema = z.string().refine(isValidDocumentId);
 
 async function hasAccessToResource(params: {
+	repo: Repo;
 	auth: string | undefined;
-	ownerDid: string;
-	resource: string;
+	documentId: string;
 	permission: "read" | "write";
 }) {
+	const ownerDid = await getDocumentOwner(params.repo, params.documentId);
+
+	if (!ownerDid) return { ok: false, error: ["Can't get the document owner"] };
+
 	return validateUserAccess({
-		...params,
+		ownerDid,
+		permission: params.permission,
+		resource: `media/${params.documentId}`,
 		auth: params.auth?.replace(`Bearer `, "") ?? "",
 	});
 }
@@ -25,44 +32,43 @@ async function hasAccessToResource(params: {
 type MediaServerConfig = {
 	storage: MediaStorageApi;
 	app: Hono;
+	repo: Repo;
 };
 
-export function addMediaServerRoutes({ storage, app }: MediaServerConfig) {
+export function addMediaServerRoutes({
+	storage,
+	app,
+	repo,
+}: MediaServerConfig) {
 	const MediaGetSchema = z.object({
-		id: z.string().uuid(),
-		user: didSchema,
+		id: documentIdSchema,
 	});
 
-	app.get(
-		"/media/:user/:id",
-		zValidator("param", MediaGetSchema),
-		async (c) => {
-			const data = c.req.valid("param");
+	app.get("/media/:id", zValidator("param", MediaGetSchema), async (c) => {
+		const data = c.req.valid("param");
 
-			const auth = await hasAccessToResource({
-				auth: c.req.header("Authorization"),
-				ownerDid: data.user,
-				permission: "read",
-				resource: `media/${data.id}`,
+		const auth = await hasAccessToResource({
+			auth: c.req.header("Authorization"),
+			documentId: data.id,
+			permission: "read",
+			repo,
+		});
+
+		if (!auth.ok) {
+			throw new HTTPException(401, {
+				message: auth.error.join(" | ") || "Error: Access not allowed",
 			});
+		}
 
-			if (!auth.ok) {
-				throw new HTTPException(401, {
-					message: auth.error.join(" | ") || "Error: Access not allowed",
-				});
-			}
-
-			try {
-				return c.body(await storage.getFile(data.user, data.id));
-			} catch (err) {
-				return c.notFound();
-			}
-		},
-	);
+		try {
+			return c.body(await storage.getFile(data.id));
+		} catch (err) {
+			return c.notFound();
+		}
+	});
 
 	const MediaSyncSchema = z.object({
-		list: z.array(z.string().uuid()),
-		user: didSchema,
+		documentId: documentIdSchema,
 	});
 
 	app.post(
@@ -73,9 +79,9 @@ export function addMediaServerRoutes({ storage, app }: MediaServerConfig) {
 
 			const auth = await hasAccessToResource({
 				auth: c.req.header("Authorization"),
-				ownerDid: data.user,
+				documentId: data.documentId,
 				permission: "read",
-				resource: `media/sync-check`,
+				repo,
 			});
 
 			if (!auth.ok) {
@@ -84,64 +90,64 @@ export function addMediaServerRoutes({ storage, app }: MediaServerConfig) {
 				});
 			}
 
-			const missing = new Set(data.list);
-			const found = new Set();
+			const doc = repo.find<{ tracks: DocumentId[] }>(data.documentId);
 
-			try {
-				const files = await storage.listUserFiles(data.user);
+			await doc.whenReady(["ready", "unavailable"]);
 
-				for (const file of files) {
-					missing.delete(file);
-					found.add(file);
-				}
+			const tracks = doc.docSync()?.tracks;
 
-				return c.json({
-					missing: Array.from(missing),
-					found: Array.from(found),
+			if (!tracks) {
+				throw new HTTPException(404, {
+					message: "Document not found",
 				});
-			} catch (err) {
-				c.notFound();
 			}
+
+			const missing = new Set();
+
+			for (const id of tracks) {
+				if (!(await storage.fileExist(id))) {
+					missing.add(id);
+				}
+			}
+
+			return c.json({
+				missing: Array.from(missing),
+			});
 		},
 	);
 
 	const MediaPutSchema = z.object({
-		id: z.string().uuid(),
-		user: didSchema,
+		id: documentIdSchema,
 	});
 
-	app.put(
-		"/media/:user/:id",
-		zValidator("param", MediaPutSchema),
-		async (c) => {
-			const data = c.req.valid("param");
+	app.put("/media/:id", zValidator("param", MediaPutSchema), async (c) => {
+		const data = c.req.valid("param");
 
-			const auth = await hasAccessToResource({
-				auth: c.req.header("Authorization"),
-				ownerDid: data.user,
-				permission: "write",
-				resource: `media/${data.id}`,
+		const auth = await hasAccessToResource({
+			auth: c.req.header("Authorization"),
+			documentId: data.id,
+			permission: "write",
+			repo,
+		});
+
+		if (!auth.ok) {
+			throw new HTTPException(401, {
+				message: auth.error.join(" | ") || "Error: Access not allowed",
 			});
+		}
 
-			if (!auth.ok) {
-				throw new HTTPException(401, {
-					message: auth.error.join(" | ") || "Error: Access not allowed",
-				});
-			}
+		const blob = await c.req.blob();
 
-			const blob = await c.req.blob();
+		try {
+			await storage.storeFile(data.id, blob);
 
-			try {
-				await storage.storeFile(data.user, data.id, blob);
-
-				return c.json({
-					success: true,
-				});
-			} catch (err) {
-				return c.notFound();
-			}
-		},
-	);
+			return c.json({
+				success: true,
+			});
+		} catch (err) {
+			return c.notFound();
+		}
+	});
 
 	return app;
 }
