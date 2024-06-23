@@ -3,19 +3,18 @@ import { MusicItemVersion, type MusicItem } from "./schema";
 import { getAudioFileData } from "../audio/getAudioFileData";
 import { copyToPrivateFileSystem, deleteFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
-import { useUser } from "@/auth/useUser";
 import { AnyDocumentId, DocumentId } from "@automerge/automerge-repo";
+import { useMemo } from "react";
 
 export function useMusicCollection() {
-	const user = useUser();
 	const repo = useRepo();
-	const [document, change] = useRootDocument();
+	const [rootDocument, change] = useRootDocument();
 
-	const musicCollection = useDocuments<MusicItem>(document?.tracks);
+	const musicCollection = useDocuments<MusicItem>(rootDocument?.tracks);
 
 	async function addFilesToCollection(files: FileList | null) {
 		if (!files) return;
-		if (!document) return;
+		if (!rootDocument) return;
 
 		for (const file of files) {
 			const data = await getAudioFileData(file);
@@ -26,7 +25,7 @@ export function useMusicCollection() {
 				description: "",
 				duration: data.duration,
 				waveform: data.waveform,
-				owner: user.id,
+				owner: rootDocument.owner,
 				version: MusicItemVersion,
 				file: {
 					id: crypto.randomUUID(),
@@ -45,7 +44,10 @@ export function useMusicCollection() {
 		}
 	}
 
-	const collection = Object.values(musicCollection);
+	const tracks = useMemo(
+		() => Object.values(musicCollection),
+		[musicCollection],
+	);
 
 	async function deleteItem(item: MusicItem) {
 		const entry = Object.entries(musicCollection).find(
@@ -76,15 +78,15 @@ export function useMusicCollection() {
 
 		if (!entry) return;
 
-		const document = repo.find<MusicItem>(entry[0] as AnyDocumentId);
+		const rootDocument = repo.find<MusicItem>(entry[0] as AnyDocumentId);
 
-		document.change((doc) => {
+		rootDocument.change((doc) => {
 			Object.assign(doc, patch);
 		});
 	}
 
 	return {
-		collection,
+		tracks,
 		addFilesToCollection,
 		deleteItem,
 		updateItem,

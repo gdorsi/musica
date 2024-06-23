@@ -11,7 +11,7 @@ export const DidSchema = z
 
 export type Did = z.infer<typeof DidSchema>;
 
-const DocumentIdSchema = z.string().refine(isValidDocumentId);
+export const DocumentIdSchema = z.string().refine(isValidDocumentId);
 
 export const MusicFileSchema = z.object({
 	id: z.string().uuid(),

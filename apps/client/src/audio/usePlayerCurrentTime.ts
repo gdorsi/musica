@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAudioManager } from "./AudioManager";
 
 export function usePlayerCurrentTime() {
 	const audioManager = useAudioManager();
 	const [value, setValue] = useState<number>(0);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		setValue(audioManager.mediaElement.currentTime);
 
 		const onTimeUpdate = () => {

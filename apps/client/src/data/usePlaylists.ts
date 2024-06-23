@@ -15,7 +15,7 @@ export function usePlaylists() {
 			id: crypto.randomUUID(),
 			tracks: [],
 			name,
-			owner: rootDocument?.owner,
+			owner: rootDocument.owner,
 			version: PlaylistVersion,
 		});
 

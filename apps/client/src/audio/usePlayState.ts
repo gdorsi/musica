@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAudioManager } from "./AudioManager";
 
 export type PlayState = "pause" | "play";
@@ -7,7 +7,7 @@ export function usePlayState() {
 	const audioManager = useAudioManager();
 	const [value, setValue] = useState<PlayState>("pause");
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		setValue(audioManager.mediaElement.paused ? "pause" : "play");
 
 		const onPlay = () => {
