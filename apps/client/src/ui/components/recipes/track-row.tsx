@@ -1,5 +1,5 @@
 import { MdDelete } from "react-icons/md";
-import { FaPause, FaPlayCircle } from "react-icons/fa";
+import { FaPause, FaPlayCircle, FaPlus } from "react-icons/fa";
 import type { MusicItem } from "@/data/schema";
 import { cn } from "@/ui/utils";
 import { TableRow, TableCell } from "../ui/table";
@@ -7,11 +7,12 @@ import { usePlayState } from "@/audio/usePlayState";
 
 type TrackProps = {
 	onMediaSelect: (item: MusicItem) => void;
-	onMediaDelete: (item: MusicItem) => void;
+	onMediaDelete?: (item: MusicItem) => void;
 	onMediaUpdate: (item: MusicItem, patch: Partial<MusicItem>) => void;
 	item: MusicItem;
 	isCurrentActiveMedia: boolean;
 	i: number;
+	showAddButton?: boolean;
 };
 export function TrackRow({
 	isCurrentActiveMedia,
@@ -20,6 +21,7 @@ export function TrackRow({
 	onMediaSelect,
 	onMediaUpdate,
 	i,
+	showAddButton,
 }: TrackProps) {
 	function handleDelete(
 		event: React.MouseEvent<HTMLButtonElement>,
@@ -27,7 +29,7 @@ export function TrackRow({
 	) {
 		event.stopPropagation();
 
-		onMediaDelete(item);
+		onMediaDelete?.(item);
 	}
 
 	function handleChange(evt: React.ChangeEvent<HTMLInputElement>) {
@@ -67,7 +69,13 @@ export function TrackRow({
 								"hidden group-hover:block group-focus/button:block",
 						)}
 					>
-						{isPlaying ? <FaPause size={30} /> : <FaPlayCircle size={30} />}
+						{showAddButton ? (
+							<FaPlus size={30} />
+						) : isPlaying ? (
+							<FaPause size={30} />
+						) : (
+							<FaPlayCircle size={30} />
+						)}
 					</span>
 				</button>
 			</TableCell>
@@ -91,13 +99,15 @@ export function TrackRow({
 				</div>
 			</TableCell>
 			<TableCell className="w-[50px]">
-				<button
-					type="button"
-					onClick={(e) => handleDelete(e, item)}
-					className="w-[30px] hidden group-hover:grid h-full items-center border-none"
-				>
-					<MdDelete size={30} />
-				</button>
+				{onMediaDelete && (
+					<button
+						type="button"
+						onClick={(e) => handleDelete(e, item)}
+						className="w-[30px] hidden group-hover:grid h-full items-center border-none"
+					>
+						<MdDelete size={30} />
+					</button>
+				)}
 			</TableCell>
 		</TableRow>
 	);

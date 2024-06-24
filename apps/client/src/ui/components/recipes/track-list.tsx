@@ -6,6 +6,8 @@ import { useTrackList } from "@/audio/useTrackList";
 import { useMusicCollection } from "@/data/useMusicCollection";
 import { useTrackListMediaSync } from "@/data/useTrackListMediaSync";
 import { useMemo } from "react";
+import { usePlaylist } from "@/data/usePlaylist";
+import { MusicItem } from "@/data/schema";
 
 type TrackListProps = {
 	filter: string;
@@ -20,6 +22,13 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 	);
 
 	const musicCollection = useMusicCollection();
+	const playlist = usePlaylist(trackId);
+
+	function addSongToPlaylist(item: MusicItem) {
+		const documentId = musicCollection.findDocumentId(item);
+
+		if (documentId) playlist.addTrack(documentId);
+	}
 
 	const tracksToAdd = useMemo(() => {
 		const ids = new Set(tracks.map((t) => t.id));
@@ -42,7 +51,7 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 								<TrackRow
 									isCurrentActiveMedia={isCurrentActiveMedia}
 									item={item}
-									onMediaDelete={musicCollection.deleteItem}
+									onMediaDelete={playlist.removeTrack}
 									onMediaSelect={setActiveTrack}
 									onMediaUpdate={musicCollection.updateItem}
 									key={item.id}
@@ -62,11 +71,11 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 										<TrackRow
 											isCurrentActiveMedia={false}
 											item={item}
-											onMediaDelete={musicCollection.deleteItem}
-											onMediaSelect={setActiveTrack}
+											onMediaSelect={addSongToPlaylist}
 											onMediaUpdate={musicCollection.updateItem}
 											key={item.id}
 											i={i}
+											showAddButton
 										/>
 									);
 								})}

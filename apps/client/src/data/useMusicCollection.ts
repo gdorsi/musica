@@ -3,7 +3,7 @@ import { MusicItemVersion, type MusicItem } from "./schema";
 import { getAudioFileData } from "../audio/getAudioFileData";
 import { copyToPrivateFileSystem, deleteFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
-import { AnyDocumentId, DocumentId } from "@automerge/automerge-repo";
+import { DocumentId } from "@automerge/automerge-repo";
 import { useMemo } from "react";
 
 export function useMusicCollection() {
@@ -49,14 +49,18 @@ export function useMusicCollection() {
 		[musicCollection],
 	);
 
-	async function deleteItem(item: MusicItem) {
+	function findDocumentId(item: MusicItem) {
 		const entry = Object.entries(musicCollection).find(
 			(entry) => item === entry[1],
 		);
 
-		if (!entry) return;
+		return (entry?.[0] as DocumentId) ?? null;
+	}
 
-		const documentId = entry[0] as DocumentId;
+	async function deleteItem(item: MusicItem) {
+		const documentId = findDocumentId(item);
+
+		if (!documentId) return;
 
 		repo.delete(documentId);
 
@@ -72,15 +76,13 @@ export function useMusicCollection() {
 	}
 
 	async function updateItem(item: MusicItem, patch: Partial<MusicItem>) {
-		const entry = Object.entries(musicCollection).find(
-			(entry) => item === entry[1],
-		);
+		const documentId = findDocumentId(item);
 
-		if (!entry) return;
+		if (!documentId) return;
 
-		const rootDocument = repo.find<MusicItem>(entry[0] as AnyDocumentId);
+		const musicItem = repo.find<MusicItem>(documentId);
 
-		rootDocument.change((doc) => {
+		musicItem.change((doc) => {
 			Object.assign(doc, patch);
 		});
 	}
@@ -90,6 +92,7 @@ export function useMusicCollection() {
 		addFilesToCollection,
 		deleteItem,
 		updateItem,
+		findDocumentId,
 	};
 }
 
