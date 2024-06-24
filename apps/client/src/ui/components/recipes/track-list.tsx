@@ -3,11 +3,12 @@ import { Table, TableBody } from "../ui/table";
 import { TrackRow } from "./track-row";
 import { DocumentId } from "@automerge/automerge-repo";
 import { useTrackList } from "@/audio/useTrackList";
-import { useMusicCollection } from "@/data/useMusicCollection";
 import { useTrackListMediaSync } from "@/data/useTrackListMediaSync";
 import { useMemo } from "react";
 import { usePlaylist } from "@/data/usePlaylist";
 import { MusicItem } from "@/data/schema";
+import { useUser } from "@/auth/useUser";
+import { useMusicCollection } from "@/data/useMusicCollection";
 
 type TrackListProps = {
 	filter: string;
@@ -21,8 +22,16 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 		i.title.toLowerCase().includes(filter.toLowerCase()),
 	);
 
-	const musicCollection = useMusicCollection();
+	const user = useUser();
+
+	const isRootMusicCollection = trackId === user.rootDocument;
+
+	const musicCollection = usePlaylist(user.rootDocument);
 	const playlist = usePlaylist(trackId);
+
+	const musicCollectionApi = useMusicCollection();
+
+	const { tracks: musicCollectionTracks } = useTrackList(user.rootDocument);
 
 	function addSongToPlaylist(item: MusicItem) {
 		const documentId = musicCollection.findDocumentId(item);
@@ -33,10 +42,12 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 	const tracksToAdd = useMemo(() => {
 		const ids = new Set(tracks.map((t) => t.id));
 
-		return musicCollection.tracks
+		return musicCollectionTracks
 			.filter((t) => !ids.has(t.id))
 			.filter((t) => t.title.toLowerCase().includes(filter.toLowerCase()));
-	}, [tracks, musicCollection.tracks, filter]);
+	}, [tracks, musicCollectionTracks, filter]);
+
+	const showAddTracks = !isRootMusicCollection && tracksToAdd.length > 0;
 
 	return (
 		<>
@@ -51,9 +62,17 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 								<TrackRow
 									isCurrentActiveMedia={isCurrentActiveMedia}
 									item={item}
-									onMediaDelete={playlist.removeTrack}
+									onMediaDelete={
+										isRootMusicCollection
+											? musicCollectionApi.deleteItem
+											: playlist.removeTrack
+									}
 									onMediaSelect={setActiveTrack}
-									onMediaUpdate={musicCollection.updateItem}
+									onMediaUpdate={
+										isRootMusicCollection
+											? musicCollectionApi.updateItem
+											: undefined
+									}
 									key={item.id}
 									i={i}
 								/>
@@ -61,7 +80,7 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 						})}
 					</TableBody>
 				</Table>
-				{tracksToAdd.length > 0 && (
+				{showAddTracks && (
 					<>
 						Add to the playlist:
 						<Table>
@@ -72,7 +91,6 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 											isCurrentActiveMedia={false}
 											item={item}
 											onMediaSelect={addSongToPlaylist}
-											onMediaUpdate={musicCollection.updateItem}
 											key={item.id}
 											i={i}
 											showAddButton

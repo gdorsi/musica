@@ -51,6 +51,7 @@ export function usePlaylist(documentId: string | undefined) {
 
 	return {
 		playlist,
+		findDocumentId,
 		updateName,
 		addTrack,
 		removeTrack,

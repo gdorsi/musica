@@ -9,13 +9,16 @@ import { useMusicCollection } from "@/data/useMusicCollection";
 import { usePlayState } from "./usePlayState";
 import { useMediaPlayer } from "./useMediaPlayer";
 import { useActiveTrack } from "./ActiveTrackState";
+import { useMemo } from "react";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
 	const [doc] = useDocument<Playlist | RootDocument>(trackId);
 
 	const { activeTrack, loading, setActiveTrack, setLoading } = useActiveTrack();
 
-	const tracks = Object.values(useDocuments<MusicItem>(doc?.tracks));
+	const tracksMap = useDocuments<MusicItem>(doc?.tracks);
+
+	const tracks = useMemo(() => Object.values(tracksMap), [tracksMap]);
 
 	function getNextSong() {
 		const currentIndex = tracks.findIndex((item) => item === activeTrack);

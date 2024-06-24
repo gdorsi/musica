@@ -8,7 +8,9 @@ import { usePlayState } from "@/audio/usePlayState";
 type TrackProps = {
 	onMediaSelect: (item: MusicItem) => void;
 	onMediaDelete?: (item: MusicItem) => void;
-	onMediaUpdate: (item: MusicItem, patch: Partial<MusicItem>) => void;
+	onMediaUpdate?:
+		| ((item: MusicItem, patch: Partial<MusicItem>) => void)
+		| undefined;
 	item: MusicItem;
 	isCurrentActiveMedia: boolean;
 	i: number;
@@ -33,7 +35,7 @@ export function TrackRow({
 	}
 
 	function handleChange(evt: React.ChangeEvent<HTMLInputElement>) {
-		onMediaUpdate(item, {
+		onMediaUpdate?.(item, {
 			title: evt.currentTarget.value,
 		});
 	}
@@ -87,11 +89,15 @@ export function TrackRow({
 				/>
 			</TableCell>
 			<TableCell className="font-medium">
-				<input
-					className="bg-transparent w-full"
-					value={item.title}
-					onChange={handleChange}
-				/>
+				{onMediaUpdate ? (
+					<input
+						className="bg-transparent w-full"
+						value={item.title}
+						onChange={handleChange}
+					/>
+				) : (
+					item.title
+				)}
 			</TableCell>
 			<TableCell className="w-[30px]">
 				<div>

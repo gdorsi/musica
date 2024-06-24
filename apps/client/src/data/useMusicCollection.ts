@@ -1,16 +1,12 @@
-import { useDocuments, useRepo } from "@automerge/automerge-repo-react-hooks";
+import { useRepo } from "@automerge/automerge-repo-react-hooks";
 import { MusicItemVersion, type MusicItem } from "./schema";
 import { getAudioFileData } from "../audio/getAudioFileData";
 import { copyToPrivateFileSystem, deleteFile } from "@/storage/opfs";
 import { useRootDocument } from "@/auth/useRootDocument";
-import { DocumentId } from "@automerge/automerge-repo";
-import { useMemo } from "react";
 
 export function useMusicCollection() {
 	const repo = useRepo();
 	const [rootDocument, change] = useRootDocument();
-
-	const musicCollection = useDocuments<MusicItem>(rootDocument?.tracks);
 
 	async function addFilesToCollection(files: FileList | null) {
 		if (!files) return;
@@ -44,28 +40,31 @@ export function useMusicCollection() {
 		}
 	}
 
-	const tracks = useMemo(
-		() => Object.values(musicCollection),
-		[musicCollection],
-	);
+	function findDocumentHandle(item: MusicItem) {
+		if (!rootDocument) return null;
 
-	function findDocumentId(item: MusicItem) {
-		const entry = Object.entries(musicCollection).find(
-			(entry) => item === entry[1],
-		);
+		for (const documentId of rootDocument.tracks) {
+			const handle = repo.find<MusicItem>(documentId);
 
-		return (entry?.[0] as DocumentId) ?? null;
+			const doc = handle.docSync();
+
+			if (doc?.id === item.id) {
+				return handle;
+			}
+		}
+
+		return null;
 	}
 
 	async function deleteItem(item: MusicItem) {
-		const documentId = findDocumentId(item);
+		const handle = findDocumentHandle(item);
 
-		if (!documentId) return;
+		if (!handle) return;
 
-		repo.delete(documentId);
+		repo.delete(handle.documentId);
 
 		change(({ tracks }) => {
-			const index = tracks.findIndex((id) => id === documentId);
+			const index = tracks.findIndex((id) => id === handle.documentId);
 
 			if (index === -1) return;
 
@@ -76,23 +75,19 @@ export function useMusicCollection() {
 	}
 
 	async function updateItem(item: MusicItem, patch: Partial<MusicItem>) {
-		const documentId = findDocumentId(item);
+		const handle = findDocumentHandle(item);
 
-		if (!documentId) return;
+		if (!handle) return;
 
-		const musicItem = repo.find<MusicItem>(documentId);
-
-		musicItem.change((doc) => {
+		handle.change((doc) => {
 			Object.assign(doc, patch);
 		});
 	}
 
 	return {
-		tracks,
 		addFilesToCollection,
 		deleteItem,
 		updateItem,
-		findDocumentId,
 	};
 }
 
