@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -8,6 +8,8 @@ import { getAuthData } from "./auth/auth";
 import { UserContext } from "./auth/useUser";
 import { Playlist } from "./ui/pages/Playlist";
 import { ActiveTrackProvider } from "./audio/ActiveTrackState";
+import { acceptPlaylistInvitation } from "./auth/sharing";
+import { toast } from "sonner";
 
 const router = createBrowserRouter([
 	{
@@ -22,6 +24,22 @@ const router = createBrowserRouter([
 
 export function Router() {
 	const [auth, setAuth] = useState(getAuthData);
+
+	useEffect(() => {
+		if (!auth) {
+			return;
+		}
+
+		if (location.hash && location.search === "?share") {
+			acceptPlaylistInvitation(
+				auth.repo,
+				auth.user,
+				location.hash.slice(1),
+			).then(() => {
+				toast("Sharing sucessful!");
+			});
+		}
+	}, [auth]);
 
 	if (!auth) {
 		return <Registration onSuccess={setAuth} />;

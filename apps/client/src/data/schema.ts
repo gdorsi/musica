@@ -68,3 +68,8 @@ export const JoinDevicePayloadSchema = z.object({
 	d: DocumentIdSchema, // root document url
 	s: z.string(), // sync server
 });
+
+export const SharePlaylistPayloadSchema = z.object({
+	u: z.string(), // ucan delegation
+	d: DocumentIdSchema, // document url
+});

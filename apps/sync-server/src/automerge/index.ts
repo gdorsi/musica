@@ -30,7 +30,7 @@ export async function createAutomergeRepo({
 			const result = await validateUserAccess({
 				auth: message.Authorization,
 				permission: hasChanges ? "write" : "read",
-				resource: `automerge/${message.documentId}`,
+				resource: message.documentId,
 				ownerDid,
 			});
 

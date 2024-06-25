@@ -6,6 +6,7 @@ import { TrackList } from "../components/recipes/track-list";
 import { Input } from "../components/ui/input";
 import { useMemo, useState } from "react";
 import { DocumentIdSchema } from "@/data/schema";
+import { SharePlaylist } from "../components/recipes/share-playlist";
 
 export function Playlist() {
 	const params = useParams<"documentId">();
@@ -31,6 +32,7 @@ export function Playlist() {
 						/>
 					</div>
 					<Link to={"/"}>Go back</Link>
+					<SharePlaylist trackId={trackId} />
 				</div>
 				<div className="h-full px-4 py-6 lg:px-8 overflow-auto">
 					<div className="flex items-center justify-between mb-4">

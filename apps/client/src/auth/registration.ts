@@ -13,23 +13,6 @@ import {
 import { AuthStorage } from "./lib/storage";
 import { getDeviceDelegation } from "./permissions";
 
-export async function trackOwneship(
-	syncServer: string,
-	user: string,
-	documentId: string,
-) {
-	await fetch(`http://${syncServer}/auth/track-ownership`, {
-		method: "POST",
-		body: JSON.stringify({
-			user,
-			documentId,
-		}),
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
-}
-
 export async function registerUser(payload: {
 	name: string;
 	syncServer?: string | undefined;

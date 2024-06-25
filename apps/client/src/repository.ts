@@ -21,7 +21,7 @@ export function createRepository(userId: User["id"], syncServers: string[]) {
 					const auth = await getResourceDelegation(
 						userId,
 						did,
-						`automerge/${message.documentId}`,
+						message.documentId,
 						hasChanges ? "write" : "read",
 					);
 

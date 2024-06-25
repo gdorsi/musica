@@ -24,7 +24,7 @@ async function hasAccessToResource(params: {
 	return validateUserAccess({
 		ownerDid,
 		permission: params.permission,
-		resource: `media/${params.documentId}`,
+		resource: params.documentId,
 		auth: params.auth?.replace(`Bearer `, "") ?? "",
 	});
 }

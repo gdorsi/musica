@@ -1,5 +1,4 @@
 import { Button } from "../ui/button";
-import { useState } from "react";
 import {
 	Dialog,
 	DialogTrigger,
@@ -9,20 +8,17 @@ import {
 	DialogDescription,
 } from "../ui/dialog";
 import { copyToClipboard } from "@/ui/utils";
-import { createJoinKeypair } from "@/auth/registration";
+import { useUser } from "@/auth/useUser";
 
-export function JoinDevice() {
-	const [did, setDid] = useState<string>();
-
+export function ShowDeviceId() {
+	const user = useUser();
 	const handleJoinClick = async () => {
-		const keypair = await createJoinKeypair();
-		setDid(keypair.did());
 		handleCopyClick();
 	};
 
 	const handleCopyClick = () => {
 		copyToClipboard({
-			textToCopy: did,
+			textToCopy: user.id,
 			toastText: "Device id copied on the clipboard",
 		});
 	};
@@ -30,15 +26,15 @@ export function JoinDevice() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button onClick={handleJoinClick}>Join Device</Button>
+				<Button onClick={handleJoinClick}>Your device id</Button>
 			</DialogTrigger>
 			<DialogContent className="max-w-[550px] w-[550px]">
 				<DialogHeader>
-					<DialogTitle>Add a new device</DialogTitle>
+					<DialogTitle>Share your device id</DialogTitle>
 					<DialogDescription className="grid items-center space-y-3">
 						<div>This device id</div>
 						<div>
-							<pre className="border rounded-sm p-2">{did}</pre>
+							<pre className="border rounded-sm p-2">{user.id}</pre>
 						</div>
 
 						<Button onClick={handleCopyClick}>Copy</Button>

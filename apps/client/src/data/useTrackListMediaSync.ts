@@ -25,7 +25,7 @@ async function syncLocalFilesToServer(
 	const token = await getResourceDelegation(
 		user.id,
 		serverDid,
-		`media/${documentId}`,
+		documentId,
 		"read",
 	);
 
@@ -54,7 +54,7 @@ async function syncLocalFilesToServer(
 		const token = await getResourceDelegation(
 			user.id,
 			serverDid,
-			`media/${documentId}`,
+			documentId,
 			"write",
 		);
 
@@ -83,7 +83,7 @@ async function pullMissingFilesFromServer(
 			const token = await getResourceDelegation(
 				user.id,
 				serverDid,
-				`media/${documentId}`,
+				documentId,
 				"read",
 			);
 

@@ -2,6 +2,7 @@ import * as ucans from "@ucans/ucans";
 
 import { type Did, type User } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
+import { DocumentId } from "@automerge/automerge-repo";
 
 export async function getResourceDelegation(
 	userId: User["id"],
@@ -28,6 +29,48 @@ export async function getResourceDelegation(
 					segments: [permission],
 				},
 			},
+		],
+		proofs,
+	});
+
+	return ucans.encode(ucan);
+}
+
+export async function getPlaylistSharingDelegation(
+	userId: User["id"],
+	target: Did,
+	playlistId: DocumentId,
+	tracks: DocumentId[],
+) {
+	const keypair = await AuthStorage.getKeypair(userId);
+	const proofs = await AuthStorage.getUcanProofs();
+
+	const ucan = await ucans.build({
+		issuer: keypair,
+		audience: target,
+		addNonce: true,
+		expiration: new Date("3023/11/27").getTime(),
+		capabilities: [
+			{
+				with: {
+					scheme: "musica",
+					hierPart: playlistId,
+				},
+				can: {
+					namespace: "musica",
+					segments: ["read"],
+				},
+			},
+			...tracks.map((id) => ({
+				with: {
+					scheme: "musica",
+					hierPart: id,
+				},
+				can: {
+					namespace: "musica",
+					segments: ["read"],
+				},
+			})),
 		],
 		proofs,
 	});

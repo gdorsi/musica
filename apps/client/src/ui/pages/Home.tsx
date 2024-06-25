@@ -9,6 +9,7 @@ import { PlayerControls } from "../components/recipes/player-controls";
 import { TrackDropArea } from "../components/recipes/track-drop-area";
 import { TrackUploadButton } from "../components/recipes/track-upload-button";
 import { useUser } from "@/auth/useUser";
+import { ShowDeviceId } from "../components/recipes/show-device-id";
 
 export function Home() {
 	const user = useUser();
@@ -33,6 +34,7 @@ export function Home() {
 							<TrackUploadButton />
 							<AddNewDevice />
 							<NewPlaylistButton />
+							<ShowDeviceId />
 						</div>
 					</div>
 					<div className="flex items-center gap-4 mb-4">
