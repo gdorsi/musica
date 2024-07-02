@@ -4,8 +4,8 @@ import { IndexedDBStorageAdapter } from "@automerge/automerge-repo-storage-index
 import { BrowserWebSocketClientAdapter } from "@automerge/automerge-repo-network-websocket";
 import { getResourceDelegation } from "./auth/permissions";
 import { getSyncServerDid } from "./auth/auth";
-import { User } from "./data/schema";
 import { ClientAccessControlProvider } from "@musica/automerge-helpers/lib/ClientAccessControlProvider";
+import { User } from "./data/models/User";
 
 export function createRepository(userId: User["id"], syncServers: string[]) {
 	const networkAdapters: NetworkAdapter[] = [

@@ -1,6 +1,6 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
-import { type RootDocument } from "../data/schema";
 import { useUser } from "./useUser";
+import { RootDocument } from "@/data/models/RootDocument";
 
 export const useRootDocument = () => {
 	const user = useUser();

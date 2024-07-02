@@ -3,12 +3,15 @@ import {
 	useDocuments,
 } from "@automerge/automerge-repo-react-hooks";
 import { useEffect } from "react";
-import type { MusicItem, Playlist, RootDocument, User } from "./schema";
-import { copyToPrivateFileSystem, exist, getFile } from "@/storage/opfs";
+import { copyToPrivateFileSystem, exist, getFile } from "./storage/opfs";
 import { getResourceDelegation } from "@/auth/permissions";
 import { useUser } from "@/auth/useUser";
 import { getSyncServerDid } from "@/auth/auth";
 import { DocumentId } from "@automerge/automerge-repo";
+import { MusicItem } from "./models/MusicItem";
+import { Playlist } from "./models/Playlist";
+import { RootDocument } from "./models/RootDocument";
+import { User } from "./models/User";
 
 async function syncLocalFilesToServer(
 	user: User,

@@ -2,7 +2,7 @@ import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
 import { useMediaEndListener } from "@/audio/useMediaEndListener";
 import { usePlayerVolume } from "@/audio/usePlayerVolume";
 import { usePlayState } from "@/audio/usePlayState";
-import { useTrackList } from "@/audio/useTrackList";
+import { useTrackList } from "@/data/useTrackList";
 import { DocumentId } from "@automerge/automerge-repo";
 import { WaveForm } from "./waveform";
 

@@ -2,14 +2,17 @@ import {
 	useDocument,
 	useDocuments,
 } from "@automerge/automerge-repo-react-hooks";
-import { getFile } from "@/storage/opfs";
+import { getFile } from "./storage/opfs";
 import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
-import { MusicItem, Playlist, RootDocument } from "@/data/schema";
 import { useMusicCollection } from "@/data/useMusicCollection";
-import { usePlayState } from "./usePlayState";
-import { useMediaPlayer } from "./useMediaPlayer";
-import { useActiveTrack } from "./ActiveTrackState";
+
 import { useMemo } from "react";
+import { useMediaPlayer } from "@/audio/useMediaPlayer";
+import { useActiveTrack } from "@/audio/ActiveTrackState";
+import { usePlayState } from "@/audio/usePlayState";
+import { MusicItem } from "./models/MusicItem";
+import { Playlist } from "./models/Playlist";
+import { RootDocument } from "./models/RootDocument";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
 	const [doc] = useDocument<Playlist | RootDocument>(trackId);

@@ -2,13 +2,13 @@ import { Separator } from "@radix-ui/react-separator";
 import { Table, TableBody } from "../ui/table";
 import { TrackRow } from "./track-row";
 import { DocumentId } from "@automerge/automerge-repo";
-import { useTrackList } from "@/audio/useTrackList";
+import { useTrackList } from "@/data/useTrackList";
 import { useTrackListMediaSync } from "@/data/useTrackListMediaSync";
 import { useMemo } from "react";
 import { usePlaylist } from "@/data/usePlaylist";
-import { MusicItem } from "@/data/schema";
 import { useUser } from "@/auth/useUser";
 import { useMusicCollection } from "@/data/useMusicCollection";
+import { MusicItem } from "@/data/models/MusicItem";
 
 type TrackListProps = {
 	filter: string;

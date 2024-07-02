@@ -1,4 +1,4 @@
-import { User } from "@/data/schema";
+import { User } from "@/data/models/User";
 import { useContext, createContext } from "react";
 
 export const UserContext = createContext<User | null>(null);

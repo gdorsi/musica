@@ -1,8 +1,9 @@
 import * as ucans from "@ucans/ucans";
 
-import { type Did, type User } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 import { DocumentId } from "@automerge/automerge-repo";
+import { User } from "@/data/models/User";
+import { Did } from "@/data/schema";
 
 export async function getResourceDelegation(
 	userId: User["id"],

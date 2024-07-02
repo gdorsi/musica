@@ -1,27 +1,25 @@
 import { useDocuments, useRepo } from "@automerge/automerge-repo-react-hooks";
-import { Playlist, PlaylistVersion } from "./schema";
 import { useRootDocument } from "@/auth/useRootDocument";
+import {
+	Playlist,
+	createPlaylist as createPlaylistDocument,
+} from "./models/Playlist";
+import { addPlaylistToRootDocument } from "./models/RootDocument";
+import { useUser } from "@/auth/useUser";
 
 export function usePlaylists() {
 	const repo = useRepo();
-	const [rootDocument, change] = useRootDocument();
+	const user = useUser();
+	const [rootDocument] = useRootDocument();
 
 	const playlists = useDocuments<Playlist>(rootDocument?.playlists ?? []);
 
 	function createPlaylist(name: string) {
 		if (!rootDocument) return;
 
-		const handle = repo.create<Playlist>({
-			id: crypto.randomUUID(),
-			tracks: [],
-			name,
-			owner: rootDocument.owner,
-			version: PlaylistVersion,
-		});
+		const handle = createPlaylistDocument(repo, rootDocument.owner, name);
 
-		change((rootDocument) => {
-			rootDocument.playlists.push(handle.documentId);
-		});
+		addPlaylistToRootDocument(repo, user.rootDocument, handle.documentId);
 
 		return handle.documentId;
 	}

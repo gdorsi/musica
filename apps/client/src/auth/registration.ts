@@ -1,17 +1,11 @@
 import * as ucans from "@ucans/ucans";
 import { createRepository } from "../repository";
 
-import {
-	type User,
-	type RootDocument,
-	RootDocumentVersion,
-	UserVersion,
-	DidSchema,
-	type Did,
-	JoinDevicePayloadSchema,
-} from "../data/schema";
+import { DidSchema, type Did, JoinDevicePayloadSchema } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 import { getDeviceDelegation } from "./permissions";
+import { RootDocument, createRootDocument } from "@/data/models/RootDocument";
+import { User, UserVersion, createUser } from "@/data/models/User";
 
 export async function registerUser(payload: {
 	name: string;
@@ -23,20 +17,8 @@ export async function registerUser(payload: {
 	const did = DidSchema.parse(keypair.did());
 	const repo = createRepository(did, syncServers);
 
-	const rootDocument = repo.create<RootDocument>({
-		version: RootDocumentVersion,
-		tracks: [],
-		playlists: [],
-		name: payload.name,
-		owner: did,
-	});
-
-	const user: User = {
-		version: UserVersion,
-		id: did,
-		rootDocument: rootDocument.documentId,
-		syncServers,
-	};
+	const rootDocument = createRootDocument(repo, did, payload.name);
+	const user = createUser(did, rootDocument.documentId, syncServers);
 
 	await AuthStorage.storeUserData(user);
 	await AuthStorage.storeKeypair(user.id, keypair);

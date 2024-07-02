@@ -1,52 +1,47 @@
 import { DocumentId } from "@automerge/automerge-repo";
 import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
-import { MusicItem, Playlist } from "./schema";
+import {
+	Playlist,
+	addTrackToPlaylist,
+	findTrackDocumentId,
+	removeTrackFromPlaylist,
+	updatePlaylistName,
+} from "./models/Playlist";
+import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
+import { MusicItem } from "./models/MusicItem";
 
 export function usePlaylist(documentId: string | undefined) {
 	const repo = useRepo();
 
-	const [playlist, change] = useDocument<Playlist>(documentId as DocumentId);
+	const playlistId =
+		documentId && isValidDocumentId(documentId) ? documentId : undefined;
+
+	const [playlist] = useDocument<Playlist>(playlistId);
 
 	function findDocumentId(item: MusicItem) {
-		if (!playlist) return null;
+		if (!playlistId) return null;
 
-		for (const documentId of playlist.tracks) {
-			const handle = repo.find<MusicItem>(documentId);
+		const trackId = findTrackDocumentId(repo, playlistId, item);
 
-			const doc = handle.docSync();
-
-			if (doc?.id === item.id) {
-				return documentId;
-			}
-		}
-
-		return null;
+		return trackId ?? null;
 	}
 
 	function updateName(name: string) {
-		change((doc) => {
-			doc.name = name;
-		});
+		if (!playlistId) return;
+
+		updatePlaylistName(repo, playlistId, name);
 	}
 
-	function addTrack(documentId: DocumentId) {
-		change((doc) => {
-			doc.tracks.push(documentId);
-		});
+	function addTrack(trackId: DocumentId) {
+		if (!playlistId) return;
+
+		addTrackToPlaylist(repo, playlistId, trackId);
 	}
 
 	function removeTrack(item: MusicItem) {
-		const documentId = findDocumentId(item);
+		if (!playlistId) return;
 
-		if (documentId === null) return;
-
-		change((doc) => {
-			const index = Array.from(doc.tracks).indexOf(documentId);
-
-			if (index >= 0) {
-				doc.tracks.splice(index, 1);
-			}
-		});
+		removeTrackFromPlaylist(repo, playlistId, item);
 	}
 
 	return {

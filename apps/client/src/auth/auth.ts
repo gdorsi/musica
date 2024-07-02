@@ -1,8 +1,9 @@
 import type { Repo } from "@automerge/automerge-repo";
 import { createRepository } from "../repository";
 
-import { DidSchema, type User } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
+import { User } from "@/data/models/User";
+import { DidSchema } from "@/data/schema";
 
 export type AuthData = { user: User; repo: Repo };
 
