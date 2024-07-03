@@ -1,14 +1,15 @@
 import { DocumentId } from "@automerge/automerge-repo";
 import { useDocument, useRepo } from "@automerge/automerge-repo-react-hooks";
+
+import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
+import { MusicItem } from "@musica/data/models/MusicItem";
 import {
 	Playlist,
-	addTrackToPlaylist,
 	findTrackDocumentId,
-	removeTrackFromPlaylist,
 	updatePlaylistName,
-} from "./models/Playlist";
-import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
-import { MusicItem } from "./models/MusicItem";
+	addTrackToPlaylist,
+	removeTrackFromPlaylist,
+} from "@musica/data/models/Playlist";
 
 export function usePlaylist(documentId: string | undefined) {
 	const repo = useRepo();

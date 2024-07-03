@@ -3,7 +3,7 @@ import { FaPause, FaPlayCircle, FaPlus } from "react-icons/fa";
 import { cn } from "@/ui/utils";
 import { TableRow, TableCell } from "../ui/table";
 import { usePlayState } from "@/audio/usePlayState";
-import { MusicItem } from "@/data/models/MusicItem";
+import { MusicItem } from "@musica/data/models/MusicItem";
 
 type TrackProps = {
 	onMediaSelect: (item: MusicItem) => void;

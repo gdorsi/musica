@@ -1,4 +1,4 @@
-import { PeerId } from "@automerge/automerge-repo";
+import { DidSchema } from "@musica/data/schema";
 import * as ucans from "@ucans/ucans";
 import { Hono } from "hono";
 
@@ -39,7 +39,7 @@ export async function validateUserAccess(params: {
 const keypairPromise = ucans.EcdsaKeypair.create();
 
 export async function getServiceDid() {
-	return (await keypairPromise).did() as PeerId;
+	return DidSchema.parse((await keypairPromise).did());
 }
 
 export function addAuthRoutes({ app }: { app: Hono }) {

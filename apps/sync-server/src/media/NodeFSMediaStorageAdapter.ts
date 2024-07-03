@@ -1,6 +1,6 @@
-import type { MediaStorageApi } from "./types";
-
 import fs from "node:fs/promises";
+import * as buffer from "node:buffer";
+import { MediaStorageApi } from "@musica/data/mediaStorage";
 
 export class NodeFSMediaStorageAdapter implements MediaStorageApi {
 	dir: string;
@@ -9,8 +9,10 @@ export class NodeFSMediaStorageAdapter implements MediaStorageApi {
 		this.dir = dir;
 	}
 
-	getFile(fileId: string): Promise<Buffer> {
-		return fs.readFile(`${this.dir}/${fileId}`);
+	async getFile(fileId: string): Promise<Blob> {
+		const content = await fs.readFile(`${this.dir}/${fileId}`);
+
+		return new buffer.Blob([content]) as Blob;
 	}
 
 	async fileExist(fileId: string): Promise<boolean> {
@@ -22,7 +24,7 @@ export class NodeFSMediaStorageAdapter implements MediaStorageApi {
 		}
 	}
 
-	async storeFile(fileId: string, data: Blob): Promise<void> {
+	async storeFile(fileId: string, data: Blob) {
 		const content = Buffer.from(await data.arrayBuffer());
 
 		await fs.mkdir(`${this.dir}`, {
@@ -30,7 +32,9 @@ export class NodeFSMediaStorageAdapter implements MediaStorageApi {
 		});
 
 		await fs.writeFile(`${this.dir}/${fileId}`, content);
+	}
 
-		return;
+	async deleteFile(fileId: string): Promise<void> {
+		await fs.rm(`${this.dir}/${fileId}`);
 	}
 }

@@ -1,40 +1,46 @@
-export async function copyToPrivateFileSystem(name: string, file: Blob) {
-	const root = await navigator.storage.getDirectory();
+import { MediaStorageApi } from "@musica/data/mediaStorage";
 
-	const fileHandle = await root.getFileHandle(name, {
-		create: true,
-	});
+export class MediaStorage implements MediaStorageApi {
+	async storeFile(name: string, file: Blob) {
+		const root = await navigator.storage.getDirectory();
 
-	// TODO: Safari doesn't support this, switch to createSyncAccessHandle
-	// https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle
-	const writable = await fileHandle.createWritable();
-	await writable.write(await file.arrayBuffer());
-	await writable.close();
-}
+		const fileHandle = await root.getFileHandle(name, {
+			create: true,
+		});
 
-export async function getFile(fileName: string) {
-	const root = await navigator.storage.getDirectory();
-	const fileHandle = await root.getFileHandle(fileName);
+		// TODO: Safari doesn't support this, switch to createSyncAccessHandle
+		// https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle
+		const writable = await fileHandle.createWritable();
+		await writable.write(await file.arrayBuffer());
+		await writable.close();
+	}
 
-	const file = await fileHandle.getFile();
+	async getFile(fileName: string) {
+		const root = await navigator.storage.getDirectory();
+		const fileHandle = await root.getFileHandle(fileName);
 
-	return file;
-}
+		const file = await fileHandle.getFile();
 
-export async function deleteFile(fileName: string) {
-	const root = await navigator.storage.getDirectory();
+		return file as Blob;
+	}
 
-	return root.removeEntry(fileName);
-}
+	async deleteFile(fileName: string) {
+		const root = await navigator.storage.getDirectory();
 
-export async function exist(fileName: string) {
-	const root = await navigator.storage.getDirectory();
+		return root.removeEntry(fileName);
+	}
 
-	try {
-		await root.getFileHandle(fileName);
+	async fileExist(fileName: string) {
+		const root = await navigator.storage.getDirectory();
 
-		return true;
-	} catch (err) {
-		return false;
+		try {
+			await root.getFileHandle(fileName);
+
+			return true;
+		} catch (err) {
+			return false;
+		}
 	}
 }
+
+export const mediaStorage = new MediaStorage();

@@ -1,5 +1,5 @@
 import { useContext, useMemo, useState } from "react";
-import { MusicItem } from "@/data/models/MusicItem";
+import { MusicItem } from "@musica/data/models/MusicItem";
 import { createContext } from "react";
 
 type ActiveTrackState = {

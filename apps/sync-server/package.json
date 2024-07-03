@@ -15,6 +15,7 @@
 		"@automerge/automerge-repo-network-websocket": "^1.1.12",
 		"@automerge/automerge-repo-storage-nodefs": "^1.1.12",
 		"@musica/automerge-helpers": "workspace:*",
+		"@musica/data": "workspace:*",
 		"@hono/node-server": "^1.11.2",
 		"@hono/zod-validator": "^0.2.2",
 		"@ucans/ucans": "^0.12.0",

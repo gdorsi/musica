@@ -74,6 +74,9 @@ importers:
       '@musica/automerge-helpers':
         specifier: workspace:*
         version: link:../../libs/automerge-helpers
+      '@musica/data':
+        specifier: workspace:*
+        version: link:../../libs/data
       '@radix-ui/react-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -158,6 +161,9 @@ importers:
       '@musica/automerge-helpers':
         specifier: workspace:*
         version: link:../../libs/automerge-helpers
+      '@musica/data':
+        specifier: workspace:*
+        version: link:../../libs/data
       '@ucans/ucans':
         specifier: ^0.12.0
         version: 0.12.0
@@ -186,6 +192,18 @@ importers:
       '@automerge/automerge-repo':
         specifier: ^1.1.12
         version: 1.1.12(@types/node@20.14.2)(typescript@5.4.5)
+
+  libs/data:
+    dependencies:
+      '@automerge/automerge':
+        specifier: ^2.2.2
+        version: 2.2.2
+      '@automerge/automerge-repo':
+        specifier: ^1.1.12
+        version: 1.1.12(@types/node@20.14.2)(typescript@5.4.5)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
 
 packages:
 

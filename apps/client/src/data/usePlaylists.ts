@@ -1,11 +1,9 @@
 import { useDocuments, useRepo } from "@automerge/automerge-repo-react-hooks";
 import { useRootDocument } from "@/auth/useRootDocument";
-import {
-	Playlist,
-	createPlaylist as createPlaylistDocument,
-} from "./models/Playlist";
-import { addPlaylistToRootDocument } from "./models/RootDocument";
+
 import { useUser } from "@/auth/useUser";
+import { Playlist, createPlaylist } from "@musica/data/models/Playlist";
+import { addPlaylistToRootDocument } from "@musica/data/models/RootDocument";
 
 export function usePlaylists() {
 	const repo = useRepo();
@@ -14,18 +12,16 @@ export function usePlaylists() {
 
 	const playlists = useDocuments<Playlist>(rootDocument?.playlists ?? []);
 
-	function createPlaylist(name: string) {
-		if (!rootDocument) return;
-
-		const handle = createPlaylistDocument(repo, rootDocument.owner, name);
-
-		addPlaylistToRootDocument(repo, user.rootDocument, handle.documentId);
-
-		return handle.documentId;
-	}
-
 	return {
-		createPlaylist,
+		createPlaylist(name: string) {
+			if (!rootDocument) return;
+
+			const handle = createPlaylist(repo, rootDocument.owner, name);
+
+			addPlaylistToRootDocument(repo, user.rootDocument, handle.documentId);
+
+			return handle.documentId;
+		},
 		playlists: Object.entries(playlists),
 	};
 }

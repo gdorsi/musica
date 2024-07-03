@@ -1,0 +1,13 @@
+{
+	"name": "@musica/data",
+	"private": true,
+	"version": "0.0.1",
+	"main": "index.js",
+	"license": "MIT",
+	"type": "module",
+	"dependencies": {
+		"@automerge/automerge": "^2.2.2",
+		"@automerge/automerge-repo": "^1.1.12",
+		"zod": "^3.23.8"
+	}
+}

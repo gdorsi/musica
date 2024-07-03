@@ -3,15 +3,15 @@ import {
 	useDocuments,
 } from "@automerge/automerge-repo-react-hooks";
 import { useEffect } from "react";
-import { copyToPrivateFileSystem, exist, getFile } from "./storage/opfs";
 import { getResourceDelegation } from "@/auth/permissions";
 import { useUser } from "@/auth/useUser";
 import { getSyncServerDid } from "@/auth/auth";
 import { DocumentId } from "@automerge/automerge-repo";
-import { MusicItem } from "./models/MusicItem";
-import { Playlist } from "./models/Playlist";
-import { RootDocument } from "./models/RootDocument";
-import { User } from "./models/User";
+import { MusicItem } from "@musica/data/models/MusicItem";
+import { Playlist } from "@musica/data/models/Playlist";
+import { RootDocument } from "@musica/data/models/RootDocument";
+import { User } from "@musica/data/models/User";
+import { mediaStorage } from "./storage/opfs";
 
 async function syncLocalFilesToServer(
 	user: User,
@@ -52,7 +52,7 @@ async function syncLocalFilesToServer(
 
 		if (!track) continue;
 
-		const file = await getFile(track.file.id);
+		const file = await mediaStorage.getFile(track.file.id);
 
 		const token = await getResourceDelegation(
 			user.id,
@@ -82,7 +82,7 @@ async function pullMissingFilesFromServer(
 	const serverDid = await getSyncServerDid(syncServer);
 
 	for (const [documentId, item] of Object.entries(tracks)) {
-		if (!(await exist(item.file.id))) {
+		if (!(await mediaStorage.fileExist(item.file.id))) {
 			const token = await getResourceDelegation(
 				user.id,
 				serverDid,
@@ -99,7 +99,7 @@ async function pullMissingFilesFromServer(
 			if (res.ok) {
 				const blob = await res.blob();
 
-				await copyToPrivateFileSystem(item.file.id, blob);
+				await mediaStorage.storeFile(item.file.id, blob);
 			}
 		}
 	}

@@ -1,11 +1,15 @@
 import * as ucans from "@ucans/ucans";
 import { createRepository } from "../repository";
 
-import { DidSchema, type Did, JoinDevicePayloadSchema } from "../data/schema";
+import { JoinDevicePayloadSchema } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 import { getDeviceDelegation } from "./permissions";
-import { RootDocument, createRootDocument } from "@/data/models/RootDocument";
-import { User, UserVersion, createUser } from "@/data/models/User";
+import {
+	RootDocument,
+	createRootDocument,
+} from "@musica/data/models/RootDocument";
+import { User, UserVersion, createUser } from "@musica/data/models/User";
+import { DidSchema, Did } from "@musica/data/schema";
 
 export async function registerUser(payload: {
 	name: string;

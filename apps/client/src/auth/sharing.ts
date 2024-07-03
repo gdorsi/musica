@@ -1,11 +1,12 @@
 import * as ucans from "@ucans/ucans";
 
-import { type Did, SharePlaylistPayloadSchema } from "../data/schema";
+import { SharePlaylistPayloadSchema } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 import { getPlaylistSharingDelegation } from "./permissions";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
-import { RootDocument } from "@/data/models/RootDocument";
-import { User } from "@/data/models/User";
+import { RootDocument } from "@musica/data/models/RootDocument";
+import { User } from "@musica/data/models/User";
+import { Did } from "@musica/data/schema";
 
 export async function generatePlaylistiInvitationUrl(
 	user: User,

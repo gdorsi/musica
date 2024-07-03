@@ -18,7 +18,7 @@ export class AudioManager {
 		}
 	}
 
-	async loadAudio(file: File) {
+	async loadAudio(file: Blob) {
 		await this.unloadCurrentAudio();
 
 		const { mediaElement } = this;

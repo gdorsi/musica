@@ -2,8 +2,8 @@ import * as ucans from "@ucans/ucans";
 
 import { AuthStorage } from "./lib/storage";
 import { DocumentId } from "@automerge/automerge-repo";
-import { User } from "@/data/models/User";
-import { Did } from "@/data/schema";
+import { User } from "@musica/data/models/User";
+import { Did } from "@musica/data/schema";
 
 export async function getResourceDelegation(
 	userId: User["id"],

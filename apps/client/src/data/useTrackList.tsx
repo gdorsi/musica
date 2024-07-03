@@ -2,7 +2,6 @@ import {
 	useDocument,
 	useDocuments,
 } from "@automerge/automerge-repo-react-hooks";
-import { getFile } from "./storage/opfs";
 import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
 import { useMusicCollection } from "@/data/useMusicCollection";
 
@@ -10,9 +9,10 @@ import { useMemo } from "react";
 import { useMediaPlayer } from "@/audio/useMediaPlayer";
 import { useActiveTrack } from "@/audio/ActiveTrackState";
 import { usePlayState } from "@/audio/usePlayState";
-import { MusicItem } from "./models/MusicItem";
-import { Playlist } from "./models/Playlist";
-import { RootDocument } from "./models/RootDocument";
+import { MusicItem } from "@musica/data/models/MusicItem";
+import { Playlist } from "@musica/data/models/Playlist";
+import { RootDocument } from "@musica/data/models/RootDocument";
+import { mediaStorage } from "./storage/opfs";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
 	const [doc] = useDocument<Playlist | RootDocument>(trackId);
@@ -47,7 +47,7 @@ export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
 		setLoading(true);
 		setActiveTrack(item);
 
-		const file = await getFile(item.file.id);
+		const file = await mediaStorage.getFile(item.file.id);
 		await playMedia(file);
 		setLoading(false);
 	}

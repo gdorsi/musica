@@ -1,17 +1,20 @@
 import { useRootDocument } from "@/auth/useRootDocument";
 import { useRepo } from "@automerge/automerge-repo-react-hooks";
+
+import { useUser } from "@/auth/useUser";
 import {
-	MusicItem,
 	createMusicItem,
+	MusicItem,
 	deleteMusicItem,
 	updateMusicItem,
-} from "./models/MusicItem";
+} from "@musica/data/models/MusicItem";
 import {
 	addTrackToPlaylist,
-	findTrackDocumentId,
 	removeTrackFromPlaylist,
-} from "./models/Playlist";
-import { useUser } from "@/auth/useUser";
+	findTrackDocumentId,
+} from "@musica/data/models/Playlist";
+import { getAudioFileData } from "@/audio/getAudioFileData";
+import { mediaStorage } from "./storage/opfs";
 
 export function useMusicCollection() {
 	const repo = useRepo();
@@ -23,7 +26,14 @@ export function useMusicCollection() {
 		if (!rootDocument) return;
 
 		for (const file of files) {
-			const handle = await createMusicItem(repo, file, rootDocument.owner);
+			const data = await getAudioFileData(file);
+			const handle = await createMusicItem(
+				repo,
+				file,
+				data,
+				mediaStorage,
+				rootDocument.owner,
+			);
 			addTrackToPlaylist(repo, user.rootDocument, handle.documentId);
 		}
 	}
@@ -32,7 +42,7 @@ export function useMusicCollection() {
 		const trackId = removeTrackFromPlaylist(repo, user.rootDocument, item);
 
 		if (trackId) {
-			await deleteMusicItem(repo, trackId);
+			await deleteMusicItem(repo, trackId, mediaStorage);
 		}
 	}
 

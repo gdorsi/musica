@@ -3,13 +3,11 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
-import type { MediaStorageApi } from "./types";
 import { validateUserAccess } from "../auth";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
 import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner";
-import { isValidDocumentId } from "@automerge/automerge-repo/dist/AutomergeUrl";
-
-const documentIdSchema = z.string().refine(isValidDocumentId);
+import { MediaStorageApi } from "@musica/data/mediaStorage";
+import { DocumentIdSchema } from "@musica/data/schema";
 
 async function hasAccessToResource(params: {
 	repo: Repo;
@@ -41,7 +39,7 @@ export function addMediaServerRoutes({
 	repo,
 }: MediaServerConfig) {
 	const MediaGetSchema = z.object({
-		id: documentIdSchema,
+		id: DocumentIdSchema,
 	});
 
 	app.get("/media/:id", zValidator("param", MediaGetSchema), async (c) => {
@@ -61,14 +59,15 @@ export function addMediaServerRoutes({
 		}
 
 		try {
-			return c.body(await storage.getFile(data.id));
+			const blob = await storage.getFile(data.id);
+			return c.body(await blob.arrayBuffer());
 		} catch (err) {
 			return c.notFound();
 		}
 	});
 
 	const MediaSyncSchema = z.object({
-		documentId: documentIdSchema,
+		documentId: DocumentIdSchema,
 	});
 
 	app.post(
@@ -117,7 +116,7 @@ export function addMediaServerRoutes({
 	);
 
 	const MediaPutSchema = z.object({
-		id: documentIdSchema,
+		id: DocumentIdSchema,
 	});
 
 	app.put("/media/:id", zValidator("param", MediaPutSchema), async (c) => {

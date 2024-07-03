@@ -1,7 +1,7 @@
 import { Button } from "../ui/button";
 import { MdOutlineDevices } from "react-icons/md";
 
-import { DidSchema } from "@/data/schema";
+import { DidSchema } from "@musica/data/schema";
 import { useState } from "react";
 import {
 	Dialog,

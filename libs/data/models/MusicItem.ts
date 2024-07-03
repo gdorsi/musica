@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { Did, DidSchema } from "../schema";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
-import { getAudioFileData } from "@/audio/getAudioFileData";
-import { copyToPrivateFileSystem, deleteFile } from "../storage/opfs";
+import { MediaStorageApi } from "../mediaStorage";
 
 export const MusicFileSchema = z.object({
 	id: z.string().uuid(),
@@ -25,15 +24,22 @@ export const MusicItemSchema = z.object({
 
 export type MusicItem = z.infer<typeof MusicItemSchema>;
 
-export async function createMusicItem(repo: Repo, file: File, owner: Did) {
-	const data = await getAudioFileData(file);
-
+export async function createMusicItem(
+	repo: Repo,
+	file: File,
+	preprocessedData: {
+		waveform: number[];
+		duration: number;
+	},
+	mediaStorage: MediaStorageApi,
+	owner: Did,
+) {
 	const item: MusicItem = {
 		id: crypto.randomUUID(),
 		title: file.name,
 		description: "",
-		duration: data.duration,
-		waveform: data.waveform,
+		duration: preprocessedData.duration,
+		waveform: preprocessedData.waveform,
 		owner,
 		version: MusicItemVersion,
 		file: {
@@ -43,7 +49,7 @@ export async function createMusicItem(repo: Repo, file: File, owner: Did) {
 		},
 	};
 
-	await copyToPrivateFileSystem(item.file.id, file);
+	await mediaStorage.storeFile(item.file.id, file);
 
 	return repo.create(item);
 }
@@ -60,13 +66,17 @@ export async function updateMusicItem(
 	});
 }
 
-export async function deleteMusicItem(repo: Repo, documentId: DocumentId) {
+export async function deleteMusicItem(
+	repo: Repo,
+	documentId: DocumentId,
+	mediaStorage: MediaStorageApi,
+) {
 	const handle = repo.find<MusicItem>(documentId);
 
 	const item = handle.docSync();
 
 	if (item) {
-		await deleteFile(item.file.id);
+		await mediaStorage.deleteFile(item.file.id);
 	}
 
 	repo.delete(documentId);
