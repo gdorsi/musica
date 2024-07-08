@@ -10,7 +10,6 @@ export const MusicFileSchema = z.object({
 });
 export type MusicFile = z.infer<typeof MusicFileSchema>;
 
-export const MusicItemVersion = 1;
 export const MusicItemSchema = z.object({
 	id: z.string().uuid(),
 	file: MusicFileSchema,
@@ -18,7 +17,6 @@ export const MusicItemSchema = z.object({
 	description: z.string(),
 	duration: z.number(),
 	waveform: z.array(z.number()),
-	version: z.literal(MusicItemVersion),
 	owner: DidSchema,
 });
 
@@ -41,7 +39,6 @@ export async function createMusicItem(
 		duration: preprocessedData.duration,
 		waveform: preprocessedData.waveform,
 		owner,
-		version: MusicItemVersion,
 		file: {
 			id: crypto.randomUUID(),
 			name: file.name,

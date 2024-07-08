@@ -3,11 +3,9 @@ import { z } from "zod";
 import { Did, DidSchema, DocumentIdSchema } from "../schema";
 import { MusicItem } from "./MusicItem";
 
-export const PlaylistVersion = 1;
 export const PlaylistSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string(),
-	version: z.literal(PlaylistVersion),
 	tracks: z.array(DocumentIdSchema),
 	owner: DidSchema,
 });
@@ -19,7 +17,6 @@ export function createPlaylist(repo: Repo, owner: Did, name: string) {
 		tracks: [],
 		name,
 		owner,
-		version: PlaylistVersion,
 	});
 
 	return handle;

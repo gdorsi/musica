@@ -2,9 +2,7 @@ import { DocumentId, Repo } from "@automerge/automerge-repo";
 import { z } from "zod";
 import { Did, DidSchema, DocumentIdSchema } from "../schema";
 
-export const RootDocumentVersion = 1;
 export const RootDocumentSchema = z.object({
-	version: z.literal(RootDocumentVersion),
 	tracks: z.array(DocumentIdSchema),
 	// Not implemented yet
 	playlists: z.array(DocumentIdSchema),
@@ -15,7 +13,6 @@ export type RootDocument = z.infer<typeof RootDocumentSchema>;
 
 export function createRootDocument(repo: Repo, owner: Did, name: string) {
 	const handle = repo.create<RootDocument>({
-		version: RootDocumentVersion,
 		tracks: [],
 		playlists: [],
 		name,
