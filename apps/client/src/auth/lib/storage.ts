@@ -31,7 +31,7 @@ export const AuthStorage = {
 		const currentProofs = await idb.get<string[]>("ucan-proofs");
 
 		if (currentProofs) {
-			idb.set("ucan-proofs", currentProofs.concat(proof));
+			return idb.set("ucan-proofs", currentProofs.concat(proof));
 		}
 
 		return idb.set("ucan-proofs", [proof]);

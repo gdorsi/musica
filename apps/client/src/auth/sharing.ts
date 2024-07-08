@@ -11,24 +11,20 @@ import { Did } from "@musica/data/schema";
 export async function generatePlaylistiInvitationUrl(
 	user: User,
 	target: Did,
-	trackId: DocumentId,
-	tracks: DocumentId[],
+	playlistId: DocumentId,
 ) {
 	const url = new URL(location.origin);
 
-	const ucan = await getPlaylistSharingDelegation(
-		user.id,
-		target,
-		trackId,
-		tracks,
-	);
+	console.log(playlistId);
+
+	const ucan = await getPlaylistSharingDelegation(user.id, target, playlistId);
 
 	url.search = "share";
 	url.hash = encodeURIComponent(
 		JSON.stringify(
 			SharePlaylistPayloadSchema.parse({
 				u: ucan,
-				d: trackId,
+				d: playlistId,
 			}),
 		),
 	);

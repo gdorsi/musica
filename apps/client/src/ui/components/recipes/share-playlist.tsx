@@ -44,7 +44,6 @@ export function SharePlaylist({ trackId }: { trackId: DocumentId }) {
 			user,
 			deviceId,
 			trackId,
-			doc.tracks,
 		);
 
 		setInvitationUrl(invitationUrl);

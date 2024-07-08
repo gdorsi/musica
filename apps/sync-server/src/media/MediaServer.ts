@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
-import { validateUserAccess } from "../auth";
+import { validateDocumentAccess } from "../auth";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
 import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner";
 import { MediaStorageApi } from "@musica/data/mediaStorage";
@@ -12,18 +12,19 @@ import { DocumentIdSchema } from "@musica/data/schema";
 async function hasAccessToResource(params: {
 	repo: Repo;
 	auth: string | undefined;
-	documentId: string;
+	documentId: DocumentId;
 	permission: "read" | "write";
 }) {
 	const ownerDid = await getDocumentOwner(params.repo, params.documentId);
 
 	if (!ownerDid) return { ok: false, error: ["Can't get the document owner"] };
 
-	return validateUserAccess({
+	return validateDocumentAccess({
 		ownerDid,
 		permission: params.permission,
-		resource: params.documentId,
+		documentId: params.documentId,
 		auth: params.auth?.replace(`Bearer `, "") ?? "",
+		repo: params.repo,
 	});
 }
 

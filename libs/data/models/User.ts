@@ -6,6 +6,7 @@ export const UserSchema = z.object({
 	id: DidSchema,
 	rootDocument: DocumentIdSchema,
 	syncServers: z.array(z.string()),
+	version: z.number(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -18,6 +19,7 @@ export function createUser(
 		id,
 		rootDocument,
 		syncServers,
+		version: 1,
 	};
 
 	return user;

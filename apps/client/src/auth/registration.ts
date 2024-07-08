@@ -72,11 +72,7 @@ export async function joinDevice(invitation: string) {
 
 	const rootDocument = repo.find<RootDocument>(payload.d);
 
-	const user: User = {
-		id: did,
-		rootDocument: rootDocument.documentId,
-		syncServers: [payload.s],
-	};
+	const user: User = createUser(did, rootDocument.documentId, [payload.s]);
 
 	await AuthStorage.storeUserData(user);
 	await AuthStorage.storeKeypair(user.id, keypair);

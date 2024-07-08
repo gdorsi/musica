@@ -1,3 +1,5 @@
+import { DocumentId, Repo } from "@automerge/automerge-repo";
+import { MusicItemSchema } from "@musica/data/models/MusicItem";
 import { DidSchema } from "@musica/data/schema";
 import * as ucans from "@ucans/ucans";
 import { Hono } from "hono";
@@ -6,8 +8,11 @@ export async function validateUserAccess(params: {
 	auth: string;
 	ownerDid: string;
 	resource: string;
+	relations?: string[];
 	permission: "read" | "write";
 }) {
+	const { relations = [] } = params;
+
 	const response = await ucans.verify(params.auth, {
 		// to make sure we're the intended recipient of this UCAN
 		audience: await getServiceDid(),
@@ -27,11 +32,62 @@ export async function validateUserAccess(params: {
 					return true;
 				}
 
+				if (
+					relations.includes(parentRes.hierPart) &&
+					childRes.hierPart === params.resource
+				) {
+					return true;
+				}
+
 				return ucans.equalCanDelegate.canDelegateResource(parentRes, childRes);
 			},
 			canDelegateAbility: ucans.equalCanDelegate.canDelegateAbility,
 		},
 	});
+
+	return response;
+}
+
+export async function validateDocumentAccess(params: {
+	auth: string;
+	ownerDid: string;
+	documentId: DocumentId;
+	permission: "read" | "write";
+	repo: Repo;
+}) {
+	const { auth, documentId, ownerDid, permission, repo } = params;
+	const response = await validateUserAccess({
+		auth,
+		resource: documentId,
+		permission,
+		ownerDid,
+	});
+
+	if (response.ok || permission === "write") return response;
+
+	const handle = repo.find(documentId);
+
+	await handle.whenReady(["unavailable", "ready"]);
+	const doc = handle.docSync();
+
+	if (!doc) return response;
+
+	// If the user has access to the playlist we want to give access to the related tracks
+	if ("type" in doc && doc.type === "track") {
+		const track = MusicItemSchema.parse(doc);
+
+		const result = await validateUserAccess({
+			auth,
+			resource: documentId,
+			relations: track.playlists,
+			permission,
+			ownerDid,
+		});
+
+		if (result.ok) {
+			return result;
+		}
+	}
 
 	return response;
 }

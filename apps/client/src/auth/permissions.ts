@@ -41,7 +41,6 @@ export async function getPlaylistSharingDelegation(
 	userId: User["id"],
 	target: Did,
 	playlistId: DocumentId,
-	tracks: DocumentId[],
 ) {
 	const keypair = await AuthStorage.getKeypair(userId);
 	const proofs = await AuthStorage.getUcanProofs();
@@ -62,16 +61,6 @@ export async function getPlaylistSharingDelegation(
 					segments: ["read"],
 				},
 			},
-			...tracks.map((id) => ({
-				with: {
-					scheme: "musica",
-					hierPart: id,
-				},
-				can: {
-					namespace: "musica",
-					segments: ["read"],
-				},
-			})),
 		],
 		proofs,
 	});

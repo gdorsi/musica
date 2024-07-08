@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Did, DidSchema } from "../schema";
+import { Did, DidSchema, DocumentIdSchema } from "../schema";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
 import { MediaStorageApi } from "../mediaStorage";
 
@@ -11,6 +11,7 @@ export const MusicFileSchema = z.object({
 export type MusicFile = z.infer<typeof MusicFileSchema>;
 
 export const MusicItemSchema = z.object({
+	type: z.literal("track"),
 	id: z.string().uuid(),
 	file: MusicFileSchema,
 	title: z.string(),
@@ -18,6 +19,8 @@ export const MusicItemSchema = z.object({
 	duration: z.number(),
 	waveform: z.array(z.number()),
 	owner: DidSchema,
+	playlists: z.array(DocumentIdSchema),
+	version: z.number(),
 });
 
 export type MusicItem = z.infer<typeof MusicItemSchema>;
@@ -33,6 +36,7 @@ export async function createMusicItem(
 	owner: Did,
 ) {
 	const item: MusicItem = {
+		type: "track",
 		id: crypto.randomUUID(),
 		title: file.name,
 		description: "",
@@ -44,6 +48,8 @@ export async function createMusicItem(
 			name: file.name,
 			type: file.type,
 		},
+		playlists: [],
+		version: 3,
 	};
 
 	await mediaStorage.storeFile(item.file.id, file);
@@ -77,4 +83,31 @@ export async function deleteMusicItem(
 	}
 
 	repo.delete(documentId);
+}
+
+export async function migrateTrack(repo: Repo, trackId: DocumentId) {
+	const handle = repo.find<MusicItem>(trackId);
+
+	await handle.whenReady(["ready"]);
+
+	const track = handle.docSync();
+
+	if (!track) return;
+
+	if (track.version === 1) {
+		handle.change((doc) => {
+			doc.type = "track"; // Added type field
+			doc.version = 2;
+		});
+	}
+
+	if (track.version === 2) {
+		handle.change((doc) => {
+			if (!doc.playlists) {
+				doc.playlists = [];
+			}
+
+			doc.version = 3;
+		});
+	}
 }

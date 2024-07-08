@@ -4,6 +4,7 @@ import { createRepository } from "../repository";
 import { AuthStorage } from "./lib/storage";
 import { User } from "@musica/data/models/User";
 import { DidSchema } from "@musica/data/schema";
+import { migrateAllData } from "@musica/data/models/RootDocument";
 
 export type AuthData = { user: User; repo: Repo };
 
@@ -13,6 +14,8 @@ export function getAuthData() {
 	if (!user) return null;
 
 	const repo = createRepository(user.id, user.syncServers);
+
+	migrateAllData(repo, user.rootDocument);
 
 	return { user, repo };
 }

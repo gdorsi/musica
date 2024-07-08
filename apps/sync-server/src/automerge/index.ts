@@ -6,7 +6,7 @@ import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner
 
 // TODO: Decouple from node
 import type { WebSocketServer } from "ws";
-import { getServiceDid, validateUserAccess } from "../auth";
+import { getServiceDid, validateDocumentAccess } from "../auth";
 
 type AutomergeRepoParams = {
 	socket: WebSocketServer;
@@ -27,11 +27,12 @@ export async function createAutomergeRepo({
 			// The document either not in the storage or public
 			if (!ownerDid) return true;
 
-			const result = await validateUserAccess({
+			const result = await validateDocumentAccess({
 				auth: message.Authorization,
 				permission: hasChanges ? "write" : "read",
-				resource: message.documentId,
+				documentId: message.documentId,
 				ownerDid,
+				repo,
 			});
 
 			return result.ok;
