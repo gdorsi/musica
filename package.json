@@ -9,9 +9,6 @@
 		"typecheck": "pnpm run -r typecheck",
 		"component-add": "cd apps/client && pnpx shadcn-ui@latest add"
 	},
-	"workspaces": {
-		"packages": ["apps/client", "apps/sync-server"]
-	},
 	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.0",

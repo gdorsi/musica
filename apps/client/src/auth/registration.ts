@@ -8,7 +8,7 @@ import {
 	RootDocument,
 	createRootDocument,
 } from "@musica/data/models/RootDocument";
-import { User, UserVersion, createUser } from "@musica/data/models/User";
+import { User, createUser } from "@musica/data/models/User";
 import { DidSchema, Did } from "@musica/data/schema";
 
 export async function registerUser(payload: {
@@ -73,7 +73,6 @@ export async function joinDevice(invitation: string) {
 	const rootDocument = repo.find<RootDocument>(payload.d);
 
 	const user: User = {
-		version: UserVersion,
 		id: did,
 		rootDocument: rootDocument.documentId,
 		syncServers: [payload.s],
