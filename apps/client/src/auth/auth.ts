@@ -21,7 +21,7 @@ export function getAuthData() {
 }
 
 export async function getSyncServerDid(syncServer: string) {
-	const res = await fetch(`http://${syncServer}/auth/did`);
+	const res = await fetch(`${location.protocol}://${syncServer}/auth/did`);
 
 	const { did } = await res.json();
 
