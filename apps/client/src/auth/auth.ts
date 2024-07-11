@@ -1,4 +1,4 @@
-import type { Repo } from "@automerge/automerge-repo";
+import type { PeerId, Repo } from "@automerge/automerge-repo";
 import { createRepository } from "../repository";
 
 import { AuthStorage } from "./lib/storage";
@@ -20,10 +20,18 @@ export function getAuthData() {
 	return { user, repo };
 }
 
+const didCache: Record<string, PeerId> = {};
+
 export async function getSyncServerDid(syncServer: string) {
+	if (didCache[syncServer]) return didCache[syncServer];
+
 	const res = await fetch(`${location.protocol}://${syncServer}/auth/did`);
 
 	const { did } = await res.json();
 
-	return DidSchema.parse(did);
+	const parsed = DidSchema.parse(did);
+
+	didCache[syncServer] = parsed;
+
+	return parsed;
 }
