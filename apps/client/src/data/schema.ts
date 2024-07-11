@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DocumentIdSchema } from "@musica/data/schema";
+import { DocumentIdSchema } from "@musica/shared/schema";
 
 export const JoinDevicePayloadSchema = z.object({
 	u: z.string(), // ucan delegation

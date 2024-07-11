@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { usePlaylist } from "@/data/usePlaylist";
 import { useUser } from "@/auth/useUser";
 import { useMusicCollection } from "@/data/useMusicCollection";
-import { MusicItem } from "@musica/data/models/MusicItem";
+import { MusicItem } from "@musica/shared/models/MusicItem";
 
 type TrackListProps = {
 	filter: string;

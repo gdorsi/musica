@@ -7,9 +7,9 @@ import { getDeviceDelegation } from "./permissions";
 import {
 	RootDocument,
 	createRootDocument,
-} from "@musica/data/models/RootDocument";
-import { User, createUser } from "@musica/data/models/User";
-import { DidSchema, Did } from "@musica/data/schema";
+} from "@musica/shared/models/RootDocument";
+import { User, createUser } from "@musica/shared/models/User";
+import { DidSchema, Did } from "@musica/shared/schema";
 
 export async function registerUser(payload: {
 	name: string;

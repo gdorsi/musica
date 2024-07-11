@@ -1,4 +1,4 @@
-import { MediaStorageApi } from "@musica/data/mediaStorage";
+import { MediaStorageApi } from "@musica/shared/mediaStorage";
 
 export class MediaStorage implements MediaStorageApi {
 	async storeFile(name: string, file: Blob) {

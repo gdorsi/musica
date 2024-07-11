@@ -1,0 +1,27 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "musica-sync-server"
+main = "src/index.ts"
+compatibility_date = "2024-07-01"
+
+# Bind a Durable Object. Durable objects are a scale-to-zero compute primitive based on the actor model.
+# Durable Objects can live for as long as needed. Use these when you need a long-running "server", such as in realtime apps.
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#durable-objects
+[[durable_objects.bindings]]
+name = "SYNC_SERVER_DO"
+class_name = "SyncServerDurableObject"
+
+# Durable Object migrations.
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["SyncServerDurableObject"]
+
+# Bind an R2 Bucket. Use R2 to store arbitrarily large blobs of data, such as files.
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#r2-buckets
+[[r2_buckets]]
+binding = "AUTOMERGE"
+bucket_name = "musica-automerge"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "musica-media"

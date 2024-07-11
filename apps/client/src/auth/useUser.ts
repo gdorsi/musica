@@ -1,4 +1,4 @@
-import { User } from "@musica/data/models/User";
+import { User } from "@musica/shared/models/User";
 import { useContext, createContext } from "react";
 
 export const UserContext = createContext<User | null>(null);

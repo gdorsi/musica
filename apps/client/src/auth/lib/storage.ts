@@ -1,6 +1,6 @@
 import * as idb from "idb-keyval";
 import * as ucans from "@ucans/ucans";
-import { UserSchema, User } from "@musica/data/models/User";
+import { UserSchema, User } from "@musica/shared/models/User";
 
 async function getKeypairFromStorage(key: string) {
 	const keypair = await idb.get(key);

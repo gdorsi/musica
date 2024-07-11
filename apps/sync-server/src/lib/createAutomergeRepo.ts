@@ -1,12 +1,15 @@
 import { Repo } from "@automerge/automerge-repo";
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket";
 import { NodeFSStorageAdapter } from "@automerge/automerge-repo-storage-nodefs";
-import { ServerAccessControlProvider } from "@musica/automerge-helpers/lib/ServerAccessControlProvider";
-import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner";
 
-// TODO: Decouple from node
+import { ServerAccessControlProvider } from "@musica/shared/automerge/ServerAccessControlProvider";
+import { getDocumentOwner } from "@musica/shared/automerge/getDocumentOwner";
+import {
+	getServiceDid,
+	validateDocumentAccess,
+} from "@musica/shared/sync-server/auth";
+
 import type { WebSocketServer } from "ws";
-import { getServiceDid, validateDocumentAccess } from "../auth";
 
 type AutomergeRepoParams = {
 	socket: WebSocketServer;

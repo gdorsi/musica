@@ -5,9 +5,9 @@ import { zValidator } from "@hono/zod-validator";
 import { HTTPException } from "hono/http-exception";
 import { validateDocumentAccess } from "../auth";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
-import { getDocumentOwner } from "@musica/automerge-helpers/lib/getDocumentOwner";
-import { MediaStorageApi } from "@musica/data/mediaStorage";
-import { DocumentIdSchema } from "@musica/data/schema";
+import { getDocumentOwner } from "../../automerge/getDocumentOwner";
+import { MediaStorageApi } from "../../mediaStorage";
+import { DocumentIdSchema } from "../../schema";
 
 async function hasAccessToResource(params: {
 	repo: Repo;
@@ -15,7 +15,8 @@ async function hasAccessToResource(params: {
 	documentId: DocumentId;
 	permission: "read" | "write";
 }) {
-	const ownerDid = await getDocumentOwner(params.repo, params.documentId);
+	const repo = params.repo;
+	const ownerDid = await getDocumentOwner(repo, params.documentId);
 
 	if (!ownerDid) return { ok: false, error: ["Can't get the document owner"] };
 
@@ -24,7 +25,7 @@ async function hasAccessToResource(params: {
 		permission: params.permission,
 		documentId: params.documentId,
 		auth: params.auth?.replace(`Bearer `, "") ?? "",
-		repo: params.repo,
+		repo,
 	});
 }
 

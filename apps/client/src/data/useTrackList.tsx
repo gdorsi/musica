@@ -9,9 +9,9 @@ import { useMemo } from "react";
 import { useMediaPlayer } from "@/audio/useMediaPlayer";
 import { useActiveTrack } from "@/audio/ActiveTrackState";
 import { usePlayState } from "@/audio/usePlayState";
-import { MusicItem } from "@musica/data/models/MusicItem";
-import { Playlist } from "@musica/data/models/Playlist";
-import { RootDocument } from "@musica/data/models/RootDocument";
+import { MusicItem } from "@musica/shared/models/MusicItem";
+import { Playlist } from "@musica/shared/models/Playlist";
+import { RootDocument } from "@musica/shared/models/RootDocument";
 import { mediaStorage } from "./storage/opfs";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {

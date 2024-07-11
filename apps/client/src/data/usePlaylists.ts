@@ -2,8 +2,8 @@ import { useDocuments, useRepo } from "@automerge/automerge-repo-react-hooks";
 import { useRootDocument } from "@/auth/useRootDocument";
 
 import { useUser } from "@/auth/useUser";
-import { Playlist, createPlaylist } from "@musica/data/models/Playlist";
-import { addPlaylistToRootDocument } from "@musica/data/models/RootDocument";
+import { Playlist, createPlaylist } from "@musica/shared/models/Playlist";
+import { addPlaylistToRootDocument } from "@musica/shared/models/RootDocument";
 
 export function usePlaylists() {
 	const repo = useRepo();

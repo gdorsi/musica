@@ -1,8 +1,8 @@
 import { DocumentId, Repo } from "@automerge/automerge-repo";
-import { MusicItemSchema } from "@musica/data/models/MusicItem";
-import { DidSchema } from "@musica/data/schema";
+
 import * as ucans from "@ucans/ucans";
-import { Hono } from "hono";
+import { MusicItemSchema } from "../models/MusicItem";
+import { DidSchema } from "../schema";
 
 export async function validateUserAccess(params: {
 	auth: string;
@@ -96,10 +96,4 @@ const keypairPromise = ucans.EcdsaKeypair.create();
 
 export async function getServiceDid() {
 	return DidSchema.parse((await keypairPromise).did());
-}
-
-export function addAuthRoutes({ app }: { app: Hono }) {
-	app.get("/auth/did", async (c) => {
-		return c.json({ did: await getServiceDid() });
-	});
 }

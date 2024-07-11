@@ -5,7 +5,7 @@ import { TrackDropArea } from "../components/recipes/track-drop-area";
 import { TrackList } from "../components/recipes/track-list";
 import { Input } from "../components/ui/input";
 import { useMemo, useState } from "react";
-import { DocumentIdSchema } from "@musica/data/schema";
+import { DocumentIdSchema } from "@musica/shared/schema";
 import { SharePlaylist } from "../components/recipes/share-playlist";
 
 export function Playlist() {

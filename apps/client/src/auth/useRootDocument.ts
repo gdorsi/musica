@@ -1,6 +1,6 @@
 import { useDocument } from "@automerge/automerge-repo-react-hooks";
 import { useUser } from "./useUser";
-import { RootDocument } from "@musica/data/models/RootDocument";
+import { RootDocument } from "@musica/shared/models/RootDocument";
 
 export const useRootDocument = () => {
 	const user = useUser();

@@ -2,9 +2,9 @@ import type { Repo } from "@automerge/automerge-repo";
 import { createRepository } from "../repository";
 
 import { AuthStorage } from "./lib/storage";
-import { User } from "@musica/data/models/User";
-import { DidSchema } from "@musica/data/schema";
-import { migrateAllData } from "@musica/data/models/RootDocument";
+import { User } from "@musica/shared/models/User";
+import { DidSchema } from "@musica/shared/schema";
+import { migrateAllData } from "@musica/shared/models/RootDocument";
 
 export type AuthData = { user: User; repo: Repo };
 

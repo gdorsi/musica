@@ -20,7 +20,7 @@ export class ServerAccessControlProvider {
 		this.#options = options;
 	}
 
-	wrap(baseAdapter: NetworkAdapter) {
+	wrap<A extends NetworkAdapter>(baseAdapter: A) {
 		const originalEmit = baseAdapter.emit;
 
 		const { validateDocumentAccess } = this.#options;

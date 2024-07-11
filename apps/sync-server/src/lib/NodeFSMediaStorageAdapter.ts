@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import * as buffer from "node:buffer";
-import { MediaStorageApi } from "@musica/data/mediaStorage";
+import { MediaStorageApi } from "@musica/shared/mediaStorage";
 
 export class NodeFSMediaStorageAdapter implements MediaStorageApi {
 	dir: string;

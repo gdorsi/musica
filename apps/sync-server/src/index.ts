@@ -1,12 +1,8 @@
 import { serve } from "@hono/node-server";
-import { addMediaServerRoutes } from "./media/MediaServer";
-import { NodeFSMediaStorageAdapter } from "./media/NodeFSMediaStorageAdapter";
+import { createSynServerHttpServer } from "@musica/shared/sync-server/httpServer";
+import { NodeFSMediaStorageAdapter } from "lib/NodeFSMediaStorageAdapter";
+import { createAutomergeRepo } from "lib/createAutomergeRepo";
 import { WebSocketServer } from "ws";
-import { createAutomergeRepo } from "./automerge";
-import { createServer } from "./server";
-import { addAuthRoutes } from "./auth";
-
-const app = createServer({ allowedOrigins: ["*"] });
 
 const webSocketServer = new WebSocketServer({ noServer: true });
 const repo = await createAutomergeRepo({
@@ -14,14 +10,10 @@ const repo = await createAutomergeRepo({
 	dir: "storage/automerge",
 });
 
-addMediaServerRoutes({
-	storage: new NodeFSMediaStorageAdapter("storage/media"),
-	app,
+const app = createSynServerHttpServer({
+	allowedOrigins: ["*"],
 	repo,
-});
-
-addAuthRoutes({
-	app,
+	storage: new NodeFSMediaStorageAdapter("storage/media"),
 });
 
 const server = serve(app, (info) => {

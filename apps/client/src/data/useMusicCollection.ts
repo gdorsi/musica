@@ -7,12 +7,12 @@ import {
 	MusicItem,
 	deleteMusicItem,
 	updateMusicItem,
-} from "@musica/data/models/MusicItem";
+} from "@musica/shared/models/MusicItem";
 import {
 	addTrackToPlaylist,
 	removeTrackFromPlaylist,
 	findTrackDocumentId,
-} from "@musica/data/models/Playlist";
+} from "@musica/shared/models/Playlist";
 import { getAudioFileData } from "@/audio/getAudioFileData";
 import { mediaStorage } from "./storage/opfs";
 

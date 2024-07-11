@@ -7,10 +7,10 @@ import { getResourceDelegation } from "@/auth/permissions";
 import { useUser } from "@/auth/useUser";
 import { getSyncServerDid } from "@/auth/auth";
 import { DocumentId } from "@automerge/automerge-repo";
-import { MusicItem } from "@musica/data/models/MusicItem";
-import { Playlist } from "@musica/data/models/Playlist";
-import { RootDocument } from "@musica/data/models/RootDocument";
-import { User } from "@musica/data/models/User";
+import { MusicItem } from "@musica/shared/models/MusicItem";
+import { Playlist } from "@musica/shared/models/Playlist";
+import { RootDocument } from "@musica/shared/models/RootDocument";
+import { User } from "@musica/shared/models/User";
 import { mediaStorage } from "./storage/opfs";
 
 async function syncLocalFilesToServer(

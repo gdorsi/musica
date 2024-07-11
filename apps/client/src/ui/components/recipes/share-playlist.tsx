@@ -17,8 +17,8 @@ import { useUser } from "@/auth/useUser";
 import { DocumentId } from "@automerge/automerge-repo";
 import { generatePlaylistiInvitationUrl } from "@/auth/sharing";
 import { useRepo } from "@automerge/automerge-repo-react-hooks";
-import { Playlist } from "@musica/data/models/Playlist";
-import { DidSchema } from "@musica/data/schema";
+import { Playlist } from "@musica/shared/models/Playlist";
+import { DidSchema } from "@musica/shared/schema";
 
 export function SharePlaylist({ trackId }: { trackId: DocumentId }) {
 	const user = useUser();

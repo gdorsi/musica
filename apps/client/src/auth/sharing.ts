@@ -4,9 +4,9 @@ import { SharePlaylistPayloadSchema } from "../data/schema";
 import { AuthStorage } from "./lib/storage";
 import { getPlaylistSharingDelegation } from "./permissions";
 import { DocumentId, Repo } from "@automerge/automerge-repo";
-import { RootDocument } from "@musica/data/models/RootDocument";
-import { User } from "@musica/data/models/User";
-import { Did } from "@musica/data/schema";
+import { RootDocument } from "@musica/shared/models/RootDocument";
+import { User } from "@musica/shared/models/User";
+import { Did } from "@musica/shared/schema";
 
 export async function generatePlaylistiInvitationUrl(
 	user: User,
