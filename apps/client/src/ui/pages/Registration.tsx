@@ -65,7 +65,7 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 									name="syncServer"
 									required
 									autoComplete="off"
-									value="127.0.0.1:8787"
+									defaultValue="127.0.0.1:8787"
 								/>
 							)}
 						</div>
