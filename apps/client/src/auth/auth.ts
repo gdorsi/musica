@@ -25,7 +25,7 @@ const didCache: Record<string, PeerId> = {};
 export async function getSyncServerDid(syncServer: string) {
 	if (didCache[syncServer]) return didCache[syncServer];
 
-	const res = await fetch(`${location.protocol}://${syncServer}/auth/did`);
+	const res = await fetch(`${location.protocol}//${syncServer}/auth/did`);
 
 	const { did } = await res.json();
 

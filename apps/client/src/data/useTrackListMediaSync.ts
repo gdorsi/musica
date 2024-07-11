@@ -33,7 +33,7 @@ async function syncLocalFilesToServer(
 	);
 
 	const res = await fetch(
-		`${location.protocol}://${syncServer}/media/sync-check`,
+		`${location.protocol}//${syncServer}/media/sync-check`,
 		{
 			method: "POST",
 			headers: {
@@ -64,7 +64,7 @@ async function syncLocalFilesToServer(
 			"write",
 		);
 
-		await fetch(`${location.protocol}://${syncServer}/media/${documentId}`, {
+		await fetch(`${location.protocol}//${syncServer}/media/${documentId}`, {
 			method: "PUT",
 			body: file,
 			headers: {
@@ -94,7 +94,7 @@ async function pullMissingFilesFromServer(
 			);
 
 			const res = await fetch(
-				`${location.protocol}://${syncServer}/media/${documentId}`,
+				`${location.protocol}//${syncServer}/media/${documentId}`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,

@@ -35,11 +35,11 @@ export function createRepository(userId: User["id"], syncServers: string[]) {
 			},
 		});
 
-		const protocol = location.protocol === "https" ? "wss" : "ws";
+		const protocol = location.protocol === "https:" ? "wss:" : "ws:";
 
 		networkAdapters.push(
 			accessDataProvider.wrap(
-				new BrowserWebSocketClientAdapter(`${protocol}://${syncServer}/`),
+				new BrowserWebSocketClientAdapter(`${protocol}//${syncServer}/`),
 			),
 		);
 	}
