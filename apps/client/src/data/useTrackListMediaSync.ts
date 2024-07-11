@@ -32,16 +32,19 @@ async function syncLocalFilesToServer(
 		"read",
 	);
 
-	const res = await fetch(`http://${syncServer}/media/sync-check`, {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${token}`,
-			"Content-Type": "application/json",
+	const res = await fetch(
+		`${location.protocol}://${syncServer}/media/sync-check`,
+		{
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				documentId,
+			}),
 		},
-		body: JSON.stringify({
-			documentId,
-		}),
-	});
+	);
 
 	if (!res.ok) return;
 
@@ -61,7 +64,7 @@ async function syncLocalFilesToServer(
 			"write",
 		);
 
-		await fetch(`http://${syncServer}/media/${documentId}`, {
+		await fetch(`${location.protocol}://${syncServer}/media/${documentId}`, {
 			method: "PUT",
 			body: file,
 			headers: {
@@ -90,11 +93,14 @@ async function pullMissingFilesFromServer(
 				"read",
 			);
 
-			const res = await fetch(`http://${syncServer}/media/${documentId}`, {
-				headers: {
-					Authorization: `Bearer ${token}`,
+			const res = await fetch(
+				`${location.protocol}://${syncServer}/media/${documentId}`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
 				},
-			});
+			);
 
 			if (res.ok) {
 				const blob = await res.blob();
