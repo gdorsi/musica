@@ -9,6 +9,7 @@ import { usePlaylist } from "@/data/usePlaylist";
 import { useUser } from "@/auth/useUser";
 import { useMusicCollection } from "@/data/useMusicCollection";
 import { MusicItem } from "@musica/shared/models/MusicItem";
+import { useRootDocument } from "@/auth/useRootDocument";
 
 type TrackListProps = {
 	filter: string;
@@ -26,6 +27,7 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 
 	const isRootMusicCollection = trackId === user.rootDocument;
 
+	const [rootDocument] = useRootDocument();
 	const musicCollection = usePlaylist(user.rootDocument);
 	const playlist = usePlaylist(trackId);
 
@@ -47,7 +49,9 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 			.filter((t) => t.title.toLowerCase().includes(filter.toLowerCase()));
 	}, [tracks, musicCollectionTracks, filter]);
 
-	const showAddTracks = !isRootMusicCollection && tracksToAdd.length > 0;
+	const isOwnPlaylist = rootDocument?.owner === playlist.playlist?.owner;
+	const showAddTracks =
+		!isRootMusicCollection && tracksToAdd.length > 0 && isOwnPlaylist;
 
 	return (
 		<>
