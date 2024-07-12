@@ -18,6 +18,14 @@ const FormSchema = z.object({
 	syncServer: z.optional(z.string()),
 });
 
+function getDefaultSyncServer() {
+	if (import.meta.env.DEV) {
+		return "127.0.0.1:8787";
+	}
+
+	return "musica-sync-server.gu-dorsi.workers.dev";
+}
+
 export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (evt) => {
 		evt.preventDefault();
@@ -65,7 +73,7 @@ export function Registration(props: { onSuccess: (auth: AuthData) => void }) {
 									name="syncServer"
 									required
 									autoComplete="off"
-									defaultValue="127.0.0.1:8787"
+									defaultValue={getDefaultSyncServer()}
 								/>
 							)}
 						</div>

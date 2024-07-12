@@ -68,55 +68,6 @@ export function addMediaServerRoutes({
 		}
 	});
 
-	const MediaSyncSchema = z.object({
-		documentId: DocumentIdSchema,
-	});
-
-	app.post(
-		"/media/sync-check",
-		zValidator("json", MediaSyncSchema),
-		async (c) => {
-			const data = c.req.valid("json");
-
-			const auth = await hasAccessToResource({
-				auth: c.req.header("Authorization"),
-				documentId: data.documentId,
-				permission: "read",
-				repo,
-			});
-
-			if (!auth.ok) {
-				throw new HTTPException(401, {
-					message: auth.error.join(" | ") || "Error: Access not allowed",
-				});
-			}
-
-			const doc = repo.find<{ tracks: DocumentId[] }>(data.documentId);
-
-			await doc.whenReady(["ready", "unavailable"]);
-
-			const tracks = doc.docSync()?.tracks;
-
-			if (!tracks) {
-				throw new HTTPException(404, {
-					message: "Document not found",
-				});
-			}
-
-			const missing = new Set();
-
-			for (const id of tracks) {
-				if (!(await storage.fileExist(id))) {
-					missing.add(id);
-				}
-			}
-
-			return c.json({
-				missing: Array.from(missing),
-			});
-		},
-	);
-
 	const MediaPutSchema = z.object({
 		id: DocumentIdSchema,
 	});

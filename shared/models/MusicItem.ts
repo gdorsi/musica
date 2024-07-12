@@ -7,6 +7,7 @@ export const MusicFileSchema = z.object({
 	id: z.string().uuid(),
 	name: z.string(),
 	type: z.string(),
+	mediaServers: z.array(z.string()),
 });
 export type MusicFile = z.infer<typeof MusicFileSchema>;
 
@@ -47,9 +48,10 @@ export async function createMusicItem(
 			id: crypto.randomUUID(),
 			name: file.name,
 			type: file.type,
+			mediaServers: [],
 		},
 		playlists: [],
-		version: 3,
+		version: 4,
 	};
 
 	await mediaStorage.storeFile(item.file.id, file);
@@ -108,6 +110,16 @@ export async function migrateTrack(repo: Repo, trackId: DocumentId) {
 			}
 
 			doc.version = 3;
+		});
+	}
+
+	if (track.version === 3) {
+		handle.change((doc) => {
+			if (!doc.file.mediaServers) {
+				doc.file.mediaServers = [];
+			}
+
+			doc.version = 4;
 		});
 	}
 }
