@@ -37,6 +37,12 @@ export function Router() {
 				location.hash.slice(1),
 			).then(() => {
 				toast("Sharing sucessful!");
+
+				const url = new URL(location.href);
+				url.searchParams.delete("share");
+				url.hash = "";
+
+				history.replaceState({}, "", url);
 			});
 		}
 	}, [auth]);

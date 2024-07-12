@@ -20,18 +20,26 @@ export function getAuthData() {
 	return { user, repo };
 }
 
-const didCache: Record<string, PeerId> = {};
-
-export async function getSyncServerDid(syncServer: string) {
-	if (didCache[syncServer]) return didCache[syncServer];
-
+async function _getSyncServerDid(syncServer: string) {
 	const res = await fetch(`${location.protocol}//${syncServer}/auth/did`);
 
 	const { did } = await res.json();
 
-	const parsed = DidSchema.parse(did);
+	return DidSchema.parse(did);
+}
 
-	didCache[syncServer] = parsed;
+const didCache: Record<string, Promise<PeerId> | undefined> = {};
+export async function getSyncServerDid(syncServer: string) {
+	const cached = didCache[syncServer];
+	if (cached) return cached;
 
-	return parsed;
+	const promise = _getSyncServerDid(syncServer);
+	didCache[syncServer] = promise;
+
+	try {
+		return await promise;
+	} catch (err) {
+		didCache[syncServer] = undefined;
+		throw err;
+	}
 }
