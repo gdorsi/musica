@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { RepoContext } from "@automerge/automerge-repo-react-hooks";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Home } from "./ui/pages/Home";
-import { Registration } from "./ui/pages/Registration";
+import { Home } from "./pages/Home";
+import { Registration } from "./pages/Registration";
 import { getAuthData } from "./auth/auth";
 import { UserContext } from "./auth/useUser";
-import { Playlist } from "./ui/pages/Playlist";
+import { Playlist } from "./pages/Playlist";
 import { ActiveTrackProvider } from "./audio/ActiveTrackState";
 import { acceptPlaylistInvitation } from "./auth/sharing";
 import { toast } from "sonner";

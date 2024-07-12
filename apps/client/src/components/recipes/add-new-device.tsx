@@ -1,6 +1,7 @@
 import { Button } from "../ui/button";
 import { MdOutlineDevices } from "react-icons/md";
 
+import { DidSchema } from "@musica/shared/schema";
 import { useState } from "react";
 import {
 	Dialog,
@@ -12,17 +13,12 @@ import {
 } from "../ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
-import { copyToClipboard } from "@/ui/utils";
+import { copyToClipboard } from "@/utils";
+import { generateInvitationURL } from "@/auth/registration";
 import { useUser } from "@/auth/useUser";
-import { DocumentId } from "@automerge/automerge-repo";
-import { generatePlaylistiInvitationUrl } from "@/auth/sharing";
-import { useRepo } from "@automerge/automerge-repo-react-hooks";
-import { Playlist } from "@musica/shared/models/Playlist";
-import { DidSchema } from "@musica/shared/schema";
 
-export function SharePlaylist({ trackId }: { trackId: DocumentId }) {
+export function AddNewDevice() {
 	const user = useUser();
-	const repo = useRepo();
 	const [invitationUrl, setInvitationUrl] = useState<string>();
 
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (evt) => {
@@ -32,19 +28,7 @@ export function SharePlaylist({ trackId }: { trackId: DocumentId }) {
 
 		const deviceId = DidSchema.parse(formData.get("deviceId"));
 
-		const handle = repo.find<Playlist>(trackId);
-
-		await handle.whenReady(["unavailable", "ready"]);
-
-		const doc = handle.docSync();
-
-		if (!doc) return;
-
-		const invitationUrl = await generatePlaylistiInvitationUrl(
-			user,
-			deviceId,
-			trackId,
-		);
+		const invitationUrl = await generateInvitationURL(user, deviceId);
 
 		setInvitationUrl(invitationUrl);
 		copyToClipboard({
@@ -71,12 +55,12 @@ export function SharePlaylist({ trackId }: { trackId: DocumentId }) {
 			<Dialog onOpenChange={handleOpenChange}>
 				<DialogTrigger asChild>
 					<Button className="flex gap-2">
-						<MdOutlineDevices /> Share the playlist
+						<MdOutlineDevices /> Pair a device
 					</Button>
 				</DialogTrigger>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Share the playlist</DialogTitle>
+						<DialogTitle>Pair a new device</DialogTitle>
 						<DialogDescription>
 							<form
 								className="grid w-full items-center space-y-3"

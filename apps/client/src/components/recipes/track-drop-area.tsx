@@ -1,5 +1,5 @@
 import { useMusicCollection } from "@/data/useMusicCollection";
-import { cn } from "@/ui/utils";
+import { cn } from "@/utils";
 import { FileDropArea } from "../ui/drop-area";
 
 type FileDropAreaProps = {

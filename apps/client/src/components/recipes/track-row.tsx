@@ -1,6 +1,6 @@
 import { MdDelete } from "react-icons/md";
 import { FaPause, FaPlayCircle, FaPlus } from "react-icons/fa";
-import { cn } from "@/ui/utils";
+import { cn } from "@/utils";
 import { TableRow, TableCell } from "../ui/table";
 import { usePlayState } from "@/audio/usePlayState";
 import { MusicItem } from "@musica/shared/models/MusicItem";

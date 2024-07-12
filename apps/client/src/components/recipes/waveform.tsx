@@ -1,6 +1,6 @@
 import { usePlayerCurrentTime } from "@/audio/usePlayerCurrentTime";
 import { MusicItem } from "@musica/shared/models/MusicItem";
-import { cn } from "@/ui/utils";
+import { cn } from "@/utils";
 
 export function WaveForm(props: {
 	activeMedia: MusicItem;
