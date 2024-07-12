@@ -15,8 +15,6 @@ export async function generatePlaylistiInvitationUrl(
 ) {
 	const url = new URL(location.origin);
 
-	console.log(playlistId);
-
 	const ucan = await getPlaylistSharingDelegation(user.id, target, playlistId);
 
 	url.search = "share";
@@ -46,6 +44,8 @@ export async function acceptPlaylistInvitation(
 
 	const rootDocument = repo.find<RootDocument>(user.rootDocument);
 	const playlist = repo.find<RootDocument>(payload.d);
+
+	await rootDocument.whenReady();
 
 	rootDocument.change((doc) => {
 		if (!doc.playlists.includes(playlist.documentId)) {
