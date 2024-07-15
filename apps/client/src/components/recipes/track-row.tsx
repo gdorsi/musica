@@ -22,7 +22,7 @@ export function TrackRow({
 	onMediaDelete,
 	onMediaSelect,
 	onMediaUpdate,
-	i,
+
 	showAddButton,
 }: TrackProps) {
 	function handleDelete(
@@ -63,7 +63,11 @@ export function TrackRow({
 							"font-bold",
 						)}
 					>
-						{i}
+						<img
+							src="https://placehold.co/512x512"
+							alt={`${item.title} cover`}
+							className="w-full h-auto"
+						/>
 					</span>
 					<span
 						className={cn(
@@ -81,13 +85,7 @@ export function TrackRow({
 					</span>
 				</button>
 			</TableCell>
-			<TableCell className="w-12">
-				<img
-					src="https://placehold.co/512x512"
-					alt={`${item.title} cover`}
-					className="w-full h-auto"
-				/>
-			</TableCell>
+
 			<TableCell className="font-medium">
 				{onMediaUpdate ? (
 					<input

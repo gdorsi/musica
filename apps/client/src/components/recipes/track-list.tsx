@@ -55,7 +55,6 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 
 	return (
 		<>
-			<h2 className="text-2xl font-semibold tracking-tight mt-5">Tracks</h2>
 			<Separator className="my-4" />
 			<div>
 				<Table>
