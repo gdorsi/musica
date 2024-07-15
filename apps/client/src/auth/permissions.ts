@@ -78,13 +78,8 @@ export async function getDeviceDelegation(userId: User["id"], target: Did) {
 		// A device invitation never expires
 		expiration: new Date("3023/11/27").getTime(),
 		capabilities: [
-			{
-				with: {
-					scheme: "musica",
-					hierPart: ucans.capability.ability.SUPERUSER,
-				},
-				can: ucans.capability.ability.SUPERUSER,
-			},
+			ucans.capability.my(ucans.SUPERUSER),
+			ucans.capability.prf(ucans.SUPERUSER, ucans.SUPERUSER),
 		],
 		proofs,
 	});
