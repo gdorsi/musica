@@ -2,25 +2,13 @@ import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
 import { useMediaEndListener } from "@/audio/useMediaEndListener";
 import { usePlayerVolume } from "@/audio/usePlayerVolume";
 import { usePlayState } from "@/audio/usePlayState";
-import { useTrackList } from "@/data/useTrackList";
-import { DocumentId } from "@automerge/automerge-repo";
 import { WaveForm } from "./waveform";
+import { useMediaPlayer } from "@/audio/useMediaPlayer";
 
-export function PlayerControls(props: {
-	trackId: DocumentId | undefined;
-}) {
-	const { activeTrack, getNextSong, getPrevSong, loading, setActiveTrack } =
-		useTrackList(props.trackId);
+export function PlayerControls() {
+	const { activeTrack, playPrevSong, playNextSong, loading } = useMediaPlayer();
 
 	const noSongLoaded = !activeTrack;
-
-	function handleNext() {
-		setActiveTrack(getNextSong());
-	}
-
-	function handlePrevious() {
-		setActiveTrack(getPrevSong());
-	}
 
 	const volume = usePlayerVolume();
 	function handleVolumeChange(evt: React.ChangeEvent<HTMLInputElement>) {
@@ -30,11 +18,7 @@ export function PlayerControls(props: {
 	const playState = usePlayState();
 
 	useMediaEndListener(() => {
-		const next = getNextSong();
-
-		if (next) {
-			setActiveTrack(next);
-		}
+		playNextSong();
 	});
 
 	return (
@@ -48,7 +32,7 @@ export function PlayerControls(props: {
 				<button
 					className="b-0"
 					type="button"
-					onClick={handlePrevious}
+					onClick={playPrevSong}
 					disabled={!activeTrack}
 				>
 					<FaStepBackward
@@ -74,7 +58,7 @@ export function PlayerControls(props: {
 				<button
 					className="b-0"
 					type="button"
-					onClick={handleNext}
+					onClick={playNextSong}
 					disabled={noSongLoaded}
 				>
 					<FaStepForward

@@ -10,6 +10,7 @@ import { Playlist } from "./pages/Playlist";
 import { ActiveTrackProvider } from "./audio/ActiveTrackState";
 import { acceptPlaylistInvitation } from "./auth/sharing";
 import { toast } from "sonner";
+import { PlayerControls } from "./components/recipes/player-controls";
 
 const router = createBrowserRouter([
 	{
@@ -56,6 +57,7 @@ export function Router() {
 			<RepoContext.Provider value={auth.repo}>
 				<ActiveTrackProvider>
 					<RouterProvider router={router} />
+					<PlayerControls />
 				</ActiveTrackProvider>
 			</RepoContext.Provider>
 		</UserContext.Provider>

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useAudioManager } from "./AudioManager";
 
-export function useMediaPlayer() {
+export function usePlayMedia() {
 	const audioManager = useAudioManager();
 
 	const previousMediaLoad = useRef<Promise<unknown>>();

@@ -16,7 +16,7 @@ type TrackListProps = {
 	trackId: DocumentId | undefined;
 };
 export function TrackList({ filter, trackId }: TrackListProps) {
-	const { tracks, activeTrack, setActiveTrack } = useTrackList(trackId);
+	const { tracks, activeTrack, selectMediaItem } = useTrackList(trackId);
 	useTrackListMediaSync(trackId);
 
 	const filteredTracks = tracks.filter((i) =>
@@ -71,7 +71,7 @@ export function TrackList({ filter, trackId }: TrackListProps) {
 											? musicCollectionApi.deleteItem
 											: playlist.removeTrack
 									}
-									onMediaSelect={setActiveTrack}
+									onMediaSelect={selectMediaItem}
 									onMediaUpdate={
 										isRootMusicCollection
 											? musicCollectionApi.updateItem

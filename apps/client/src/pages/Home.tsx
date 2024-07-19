@@ -5,7 +5,6 @@ import { TrackList } from "../components/recipes/track-list";
 import { NewPlaylistButton } from "../components/recipes/add-new-playlist";
 import { usePlaylists } from "@/data/usePlaylists";
 import { Link } from "react-router-dom";
-import { PlayerControls } from "../components/recipes/player-controls";
 import { TrackDropArea } from "../components/recipes/track-drop-area";
 import { TrackUploadButton } from "../components/recipes/track-upload-button";
 import { useUser } from "@/auth/useUser";
@@ -46,7 +45,6 @@ export function Home() {
 					</div>
 					<TrackList filter={filter} trackId={trackId} />
 				</div>
-				<PlayerControls trackId={trackId} />
 			</TrackDropArea>
 		</div>
 	);

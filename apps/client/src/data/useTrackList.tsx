@@ -5,71 +5,42 @@ import {
 import { AutomergeUrl, DocumentId } from "@automerge/automerge-repo";
 import { useMusicCollection } from "@/data/useMusicCollection";
 
-import { useMemo, useRef } from "react";
-import { useMediaPlayer } from "@/audio/useMediaPlayer";
+import { useMemo } from "react";
 import { useActiveTrack } from "@/audio/ActiveTrackState";
-import { usePlayState } from "@/audio/usePlayState";
 import { MusicItem } from "@musica/shared/models/MusicItem";
 import { Playlist } from "@musica/shared/models/Playlist";
 import { RootDocument } from "@musica/shared/models/RootDocument";
-import { mediaStorage } from "./storage/opfs";
-import { promiseWithResolvers } from "@/utils";
+import { usePlayState } from "@/audio/usePlayState";
 
 export function useTrackList(trackId: DocumentId | AutomergeUrl | undefined) {
 	const [doc] = useDocument<Playlist | RootDocument>(trackId);
 
-	const { activeTrack, loading, setActiveTrack, setLoading } = useActiveTrack();
+	const { activeTrack, loading, setActiveTrack, setActivePlaylist } =
+		useActiveTrack();
 
 	const tracksMap = useDocuments<MusicItem>(doc?.tracks);
 
+	const playState = usePlayState();
 	const tracks = useMemo(() => Object.values(tracksMap), [tracksMap]);
 
-	function getNextSong() {
-		const currentIndex = tracks.findIndex((item) => item === activeTrack);
-		const nextIndex = (currentIndex + 1) % tracks.length;
-
-		return tracks[nextIndex];
-	}
-
-	function getPrevSong() {
-		const currentIndex = tracks.findIndex((item) => item === activeTrack);
-		const previousIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-		return tracks[previousIndex];
-	}
-
-	const playState = usePlayState();
-	const playMedia = useMediaPlayer();
-
-	const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-
-	async function loadMediaItem(item: MusicItem) {
-		clearTimeout(timeoutRef.current);
+	async function selectMediaItem(item: MusicItem) {
 		if (item === activeTrack) {
-			setLoading(false);
-			return playState.toggle();
+			playState.toggle();
+			return;
 		}
 
-		setLoading(true);
 		setActiveTrack(item);
 
-		while ((await mediaStorage.fileExist(item.file.id)) === false) {
-			const wait = promiseWithResolvers();
-			timeoutRef.current = setTimeout(wait.resolve, 1000);
-			await wait.promise;
+		if (doc) {
+			setActivePlaylist(doc);
 		}
-
-		const file = await mediaStorage.getFile(item.file.id);
-		await playMedia(file);
-		setLoading(false);
 	}
 
 	return {
 		tracks,
 		activeTrack,
-		setActiveTrack: loadMediaItem,
+		selectMediaItem,
 		loading,
-		getNextSong,
-		getPrevSong,
 	};
 }
 

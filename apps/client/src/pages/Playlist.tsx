@@ -1,6 +1,5 @@
 import { usePlaylist } from "@/data/usePlaylist";
 import { Link, useParams } from "react-router-dom";
-import { PlayerControls } from "../components/recipes/player-controls";
 import { TrackDropArea } from "../components/recipes/track-drop-area";
 import { TrackList } from "../components/recipes/track-list";
 import { Input } from "../components/ui/input";
@@ -45,7 +44,6 @@ export function Playlist() {
 					</div>
 					<TrackList filter={filter} trackId={trackId} />
 				</div>
-				<PlayerControls trackId={trackId} />
 			</TrackDropArea>
 		</div>
 	);
